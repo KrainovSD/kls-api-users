@@ -1,9 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import {
-  LOGGER_PROVIDER_MODULE,
-  LoggerService,
-} from '@krainovsd/nest-logger-service';
+import { LOGGER_TOKEN, LoggerService } from '@krainovsd/nest-logger-service';
 import { timeout } from 'rxjs';
 import { events, statistics, words } from './client.constants';
 import { services } from '../../const';
@@ -30,7 +27,7 @@ export class ClientService {
     @Inject(services.statistics.alias) private clientStatistics: ClientProxy,
     @Inject(services.words.alias) private clientWords: ClientProxy,
 
-    @Inject(LOGGER_PROVIDER_MODULE)
+    @Inject(LOGGER_TOKEN)
     private readonly logger: LoggerService,
   ) {}
 

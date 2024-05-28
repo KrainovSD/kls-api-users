@@ -49,6 +49,7 @@ export class AuthService {
       email: createUserDto.emailToChange,
       ...rest,
     });
+
     return RESPONSE_MESSAGES.sendEmail;
   }
 

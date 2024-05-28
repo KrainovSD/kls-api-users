@@ -4,9 +4,8 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { User } from './users.model';
-import { Settings } from '../settings/settings.model';
-import { SettingsModule } from '../settings/settings.module';
-import { ClientModule } from '../clients/client.module';
+import { SettingsModule, Settings } from '../settings';
+import { ClientModule } from '../clients';
 
 @Module({
   imports: [

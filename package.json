@@ -22,13 +22,14 @@
     "test": "jest"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.577.0",
     "@fastify/cookie": "9.0.4",
     "@fastify/helmet": "11.1.1",
     "@fastify/multipart": "7.7.3",
     "@fastify/static": "6.11.0",
     "@fastify/swagger": "^6.0.0",
     "@krainovsd/nest-jwt-service": "^0.0.3",
-    "@krainovsd/nest-logger-service": "^0.0.4",
+    "@krainovsd/nest-logger-service": "^0.1.1",
     "@krainovsd/nest-utils": "^0.0.4",
     "@krainovsd/utils": "^0.1.1",
     "@nestjs-modules/mailer": "^2.0.2",

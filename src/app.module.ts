@@ -28,31 +28,42 @@ import {
   POSTGRES_PORT,
   POSTGRES_USER,
   REFRESH_TOKEN_SECRET,
+  S3_ACCESS_KEY,
+  S3_BUCKET,
+  S3_ENDPOINT,
+  S3_REGION,
+  S3_SECRET_KEY,
 } from './config';
+import { S3Module } from './modules/s3';
 
 @Module({
   imports: [
     LoggerModule.forRoot({
       transportOptions: [
-        { type: 'console', format: 'logfmt', level: LOG_LEVEL as LogLevel },
+        {
+          type: 'console',
+          format: 'logfmt',
+          level: LOG_LEVEL.toLowerCase() as LogLevel,
+        },
       ],
       defaultMeta: {
         service,
       },
     }),
-    SettingsModule,
     ConfigModule.forRoot({
       envFilePath: `.env`,
     }),
-    SequelizeModule.forRoot({
-      dialect: 'postgres',
-      host: POSTGRES_HOST,
-      port: Number(POSTGRES_PORT),
-      username: POSTGRES_USER,
-      password: POSTGRES_PASSWORD,
-      database: POSTGRES_DB,
-      models: [User, Settings],
-      autoLoadModels: true,
+    SequelizeModule.forRootAsync({
+      useFactory: () => ({
+        dialect: 'postgres',
+        host: POSTGRES_HOST,
+        port: Number(POSTGRES_PORT),
+        username: POSTGRES_USER,
+        password: POSTGRES_PASSWORD,
+        database: POSTGRES_DB,
+        models: [User, Settings],
+        autoLoadModels: true,
+      }),
     }),
     JwtModule.forRoot({
       accessTokenSecret: ACCESS_TOKEN_SECRET,
@@ -60,6 +71,19 @@ import {
       expiresAccessToken: EXPIRES_ACCESS_TOKEN,
       expiresRefreshToken: EXPIRES_REFRESH_TOKEN,
     }),
+    S3Module.forRoot({
+      region: S3_REGION,
+      endpoint: S3_ENDPOINT,
+      credentials: {
+        accessKeyId: S3_ACCESS_KEY,
+        secretAccessKey: S3_SECRET_KEY,
+      },
+      bucket: S3_BUCKET,
+      //   requestHandler: {
+      //     requestTimeout: 30000,
+      //   },
+    }),
+    SettingsModule,
     UsersModule,
     AuthModule,
     MailerModule,

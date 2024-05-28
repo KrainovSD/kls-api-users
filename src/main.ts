@@ -54,6 +54,7 @@ async function start() {
     .setDescription('Документация по API')
     .setVersion('1.0.0')
     .addBasicAuth()
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

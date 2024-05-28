@@ -9,9 +9,9 @@ import {
   UseInterceptors,
   Delete,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@krainovsd/nest-jwt-service';
-import { IncomingFileName, OperationId, UserId } from '@krainovsd/nest-utils';
+import { OperationId, UserId } from '@krainovsd/nest-utils';
 
 import { UsersService } from './users.service';
 import {} from './dto/change-nick-name.dto';
@@ -29,10 +29,8 @@ import {
   MAX_SIZE_WALLPAPER,
   MIME_TYPE_AVATAR,
   MIME_TYPE_WALLPAPER,
-  UPLOAD_PATH_AVATAR,
-  UPLOAD_PATH_WALLPAPER,
 } from './users.constants';
-import { UploadInterceptor } from '../../utils';
+import { IncomingFile, UploadInterceptor } from '../../utils';
 
 @ApiTags('Пользователи')
 @Controller(`${API_VERSION.v1}/user`)
@@ -114,6 +112,7 @@ export class UsersController {
     });
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Delete('/avatar')
   clearAvatar(@UserId() userId: string, @OperationId() operationId: string) {
@@ -132,30 +131,32 @@ export class UsersController {
       },
     },
   })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @UseInterceptors(
     UploadInterceptor({
       fieldName: 'avatar',
       limits: MAX_SIZE_AVATAR,
       mimeTypes: MIME_TYPE_AVATAR,
-      pathToSave: UPLOAD_PATH_AVATAR,
     }),
   )
-  @Put('/avatar')
+  @Post('/avatar')
   updateAvatar(
-    @IncomingFileName() fileName: string,
+    @IncomingFile() incomingFile: IncomingFile,
     @UserId() userId: string,
     @OperationId() operationId: string,
   ) {
-    return this.userServise.updateAvatar({ fileName, operationId, userId });
+    return this.userServise.updateAvatar({ incomingFile, operationId, userId });
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Delete('/wallpaper')
   clearWallpaper(@UserId() userId: string, @OperationId() operationId: string) {
     return this.userServise.clearWallpaper({ userId, operationId });
   }
 
+  @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -169,21 +170,24 @@ export class UsersController {
     },
   })
   @UseGuards(AuthGuard())
-  @Put('/wallpaper')
+  @Post('/wallpaper')
   @UseInterceptors(
     UploadInterceptor({
       fieldName: 'wallpaper',
       limits: MAX_SIZE_WALLPAPER,
       mimeTypes: MIME_TYPE_WALLPAPER,
-      pathToSave: UPLOAD_PATH_WALLPAPER,
     }),
   )
   updateWallpaper(
-    @IncomingFileName() fileName: string,
+    @IncomingFile() incomingFile: IncomingFile,
     @UserId() userId: string,
     @OperationId() operationId: string,
   ) {
-    return this.userServise.updateWallpaper({ fileName, operationId, userId });
+    return this.userServise.updateWallpaper({
+      incomingFile,
+      operationId,
+      userId,
+    });
   }
 
   @UseGuards(AuthGuard({ roles: 'admin' }))

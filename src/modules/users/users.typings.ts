@@ -34,7 +34,7 @@ export type ClearAvatarOptions = {
 } & DefaultInfo;
 
 export type UpdateAvatarOptions = {
-  fileName: string;
+  incomingFile: IncomingFile;
   userId: string;
 } & DefaultInfo;
 
@@ -43,7 +43,7 @@ export type ClearWallpaperOptions = {
 } & DefaultInfo;
 
 export type UpdateWallpaperOptions = {
-  fileName: string;
+  incomingFile: IncomingFile;
   userId: string;
 } & DefaultInfo;
 

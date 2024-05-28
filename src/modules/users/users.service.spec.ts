@@ -10,7 +10,7 @@ import { ERROR_MESSAGES } from '../../const';
 import { SettingsService } from '../settings/settings.service';
 import { ChangePassDto } from './dto/change-pass.dto';
 import { ChangeEmailDto } from './dto/change-email.dto';
-import { LOGGER_PROVIDER_MODULE } from '@krainovsd/nest-logger-service';
+import { LOGGER_TOKEN } from '@krainovsd/nest-logger-service';
 
 describe('Users Service', () => {
   let usersService: UsersService;
@@ -33,7 +33,7 @@ describe('Users Service', () => {
     },
   };
   const loggerProvider: Provider = {
-    provide: LOGGER_PROVIDER_MODULE,
+    provide: LOGGER_TOKEN,
     useValue: {
       startRequest: jest.fn(() => null),
       endRequest: jest.fn(() => null),

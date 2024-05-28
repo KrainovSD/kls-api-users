@@ -1,4 +1,3 @@
-import { writeFile } from 'fs/promises';
 import { FastifyRequest } from 'fastify';
 import {
   NestInterceptor,
@@ -8,53 +7,52 @@ import {
   mixin,
   Type,
 } from '@nestjs/common';
-import { v4 } from 'uuid';
+import { utils } from '@krainovsd/utils';
+
 import { Observable } from 'rxjs';
-import { fsOperation } from '../helpers';
 
 type TUploadInterceptor = {
   fieldName: string;
   mimeTypes: RegExp;
   limits: number;
-  pathToSave: string;
 };
 
 export function UploadInterceptor({
   fieldName,
   limits,
   mimeTypes,
-  pathToSave,
 }: TUploadInterceptor) {
   class UploadInterceptorClass implements NestInterceptor {
     async intercept(
       ctx: ExecutionContext,
       next: CallHandler,
     ): Promise<Observable<unknown>> {
-      if (!fieldName) throw new BadRequestException('not expected field');
+      if (!fieldName)
+        throw new BadRequestException("File field doesn't exist.");
 
       const req = ctx.switchToHttp().getRequest() as FastifyRequest;
       const isMultipart = req.isMultipart();
-      if (!isMultipart)
-        throw new BadRequestException('multipart/form-data expected.');
+      if (!isMultipart) throw new BadRequestException("Isn't formdata.");
 
       const file = await req.file({
         limits: {
           fileSize: limits,
         },
       });
-      if (!file) throw new BadRequestException('file expected');
+      if (!file) throw new BadRequestException("Hasn't file");
       if (fieldName.toLowerCase() !== file.fieldname.toLowerCase())
-        throw new BadRequestException('current field not expected');
+        throw new BadRequestException('Not expected file field');
       if (!mimeTypes.test(file.mimetype))
-        throw new BadRequestException('not expected mimetype');
+        throw new BadRequestException('Not expected mimetype');
 
       const buffer = await file.toBuffer();
-      const fileName = `${v4()}.${file.filename.split('.').pop()}`;
+      const fileName = `${fieldName}-${utils.common.getRandomId(10)}.${file.filename.split('.').pop()}`;
 
-      await fsOperation.checkOrCreateFolder(pathToSave);
-      await writeFile(`${pathToSave}/${fileName}`, buffer, 'binary');
+      req.incomingFile = {
+        name: fileName,
+        payload: buffer,
+      };
 
-      req.incomingFileName = fileName;
       return next.handle();
     }
   }

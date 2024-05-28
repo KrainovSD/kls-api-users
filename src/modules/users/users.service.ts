@@ -1,12 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { utils } from '@krainovsd/utils';
 import { hash as getHash } from 'bcryptjs';
+
 import { User } from './users.model';
 import { SettingsService } from '../settings/settings.service';
 import { Settings } from '../settings/settings.model';
-import { fsOperation } from '../../utils/helpers';
 import {
   ERROR_MESSAGES,
   MAIL_MESSAGES_OPTION,
@@ -14,7 +18,6 @@ import {
   SALT_ROUNDS,
 } from '../../const';
 import { ClientService } from '../clients/client.service';
-import { UPLOAD_PATH_AVATAR, UPLOAD_PATH_WALLPAPER } from './users.constants';
 import {
   CallChangeEmailOptions,
   CallChangePassOptions,
@@ -41,6 +44,7 @@ import {
   UpdateWallpaperOptions,
 } from './users.typings';
 import { MailerService } from '../mailer';
+import { InjectS3, S3Service } from '../s3';
 
 @Injectable()
 export class UsersService {
@@ -49,6 +53,8 @@ export class UsersService {
     private readonly settingService: SettingsService,
     private readonly mailerService: MailerService,
     private readonly clientService: ClientService,
+    @InjectS3()
+    private readonly s3Service: S3Service,
   ) {}
 
   private readonly forbiddenFields = [
@@ -206,20 +212,31 @@ export class UsersService {
     const user = await this.getUserById({ id: userId, ...rest });
     if (!user || !user.avatar)
       throw new BadRequestException(ERROR_MESSAGES.userNotFound);
-    await fsOperation.removeFile(UPLOAD_PATH_AVATAR, user.avatar);
+
+    if (!(await this.s3Service.deleteItem({ key: user.avatar, ...rest })))
+      return new ConflictException("Couldn't clear avatar");
+
     user.avatar = null;
     await user.save();
     return RESPONSE_MESSAGES.success;
   }
-  async updateAvatar({ fileName, userId, ...rest }: UpdateAvatarOptions) {
+  async updateAvatar({ incomingFile, userId, ...rest }: UpdateAvatarOptions) {
     const user = await this.getUserById({ id: userId, ...rest });
     if (!user) throw new BadRequestException(ERROR_MESSAGES.userNotFound);
-    if (user.avatar !== fileName) {
-      if (user.avatar)
-        await fsOperation.removeFile(UPLOAD_PATH_AVATAR, user.avatar);
-      user.avatar = fileName;
-      await user.save();
-    }
+
+    if (user.avatar) this.s3Service.deleteItem({ key: user.avatar, ...rest });
+    if (
+      !(await this.s3Service.putItem({
+        key: incomingFile.name,
+        payload: incomingFile.payload,
+        ...rest,
+      }))
+    )
+      return new ConflictException("Couldn't save avatar");
+
+    user.avatar = incomingFile.name;
+    await user.save();
+
     return RESPONSE_MESSAGES.success;
   }
 
@@ -227,20 +244,36 @@ export class UsersService {
     const user = await this.getUserById({ id: userId, ...rest });
     if (!user || !user.wallpaper)
       throw new BadRequestException(ERROR_MESSAGES.userNotFound);
-    await fsOperation.removeFile(UPLOAD_PATH_WALLPAPER, user.wallpaper);
+
+    if (!(await this.s3Service.deleteItem({ key: user.wallpaper, ...rest })))
+      return new ConflictException("Couldn't clear wallpaper");
+
     user.wallpaper = null;
     await user.save();
     return RESPONSE_MESSAGES.success;
   }
-  async updateWallpaper({ fileName, userId, ...rest }: UpdateWallpaperOptions) {
+  async updateWallpaper({
+    incomingFile,
+    userId,
+    ...rest
+  }: UpdateWallpaperOptions) {
     const user = await this.getUserById({ id: userId, ...rest });
     if (!user) throw new BadRequestException(ERROR_MESSAGES.userNotFound);
-    if (user.wallpaper !== fileName) {
-      if (user.wallpaper)
-        await fsOperation.removeFile(UPLOAD_PATH_WALLPAPER, user.wallpaper);
-      user.wallpaper = fileName;
-      await user.save();
-    }
+
+    if (user.wallpaper)
+      this.s3Service.deleteItem({ key: user.wallpaper, ...rest });
+    if (
+      !(await this.s3Service.putItem({
+        key: incomingFile.name,
+        payload: incomingFile.payload,
+        ...rest,
+      }))
+    )
+      return new ConflictException("Couldn't save wallpaper");
+
+    user.wallpaper = incomingFile.name;
+    await user.save();
+
     return RESPONSE_MESSAGES.success;
   }
 

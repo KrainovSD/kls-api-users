@@ -74,6 +74,21 @@ if (!process.env.EXPIRES_ACCESS_TOKEN) {
 if (!process.env.EXPIRES_REFRESH_TOKEN) {
   throw new Error('EXPIRES_REFRESH_TOKEN env is not defined');
 }
+if (!process.env.S3_REGION) {
+  throw new Error('S3_REGION env is not defined');
+}
+if (!process.env.S3_ENDPOINT) {
+  throw new Error('S3_ENDPOINT env is not defined');
+}
+if (!process.env.S3_ACCESS_KEY) {
+  throw new Error('S3_ACCESS_KEY env is not defined');
+}
+if (!process.env.S3_SECRET_KEY) {
+  throw new Error('S3_SECRET_KEY env is not defined');
+}
+if (!process.env.S3_BUCKET) {
+  throw new Error('S3_BUCKET env is not defined');
+}
 
 export const POSTGRES_HOST = process.env.POSTGRES_HOST;
 export const POSTGRES_USER = process.env.POSTGRES_USER;
@@ -99,3 +114,8 @@ export const LOG_LEVEL = process.env.LOG_LEVEL;
 export const PORT = process.env.PORT;
 export const EXPIRES_ACCESS_TOKEN = process.env.EXPIRES_ACCESS_TOKEN;
 export const EXPIRES_REFRESH_TOKEN = process.env.EXPIRES_REFRESH_TOKEN;
+export const S3_REGION = process.env.S3_REGION;
+export const S3_ENDPOINT = process.env.S3_ENDPOINT;
+export const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY;
+export const S3_SECRET_KEY = process.env.S3_SECRET_KEY;
+export const S3_BUCKET = process.env.S3_BUCKET;

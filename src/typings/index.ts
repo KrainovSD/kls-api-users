@@ -1,6 +1,11 @@
 export {};
 
 declare global {
+  interface IncomingFile {
+    name: string;
+    payload: Buffer;
+  }
+
   namespace Storage {
     interface MultipartFile {
       toBuffer: () => Promise<Buffer>;
@@ -21,7 +26,7 @@ declare global {
 
 declare module 'fastify' {
   interface FastifyRequest {
-    incomingFileName?: string;
+    incomingFile?: IncomingFile;
     traceId?: string;
     operationId?: string;
     user?: UserInfo;

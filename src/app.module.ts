@@ -1,5 +1,4 @@
 import { LogLevel, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import {
   LoggerFilter,
@@ -21,6 +20,7 @@ import {
   ACCESS_TOKEN_SECRET,
   EXPIRES_ACCESS_TOKEN,
   EXPIRES_REFRESH_TOKEN,
+  LOG_FORMAT,
   LOG_LEVEL,
   POSTGRES_DB,
   POSTGRES_HOST,
@@ -42,16 +42,13 @@ import { S3Module } from './modules/s3';
       transportOptions: [
         {
           type: 'console',
-          format: 'logfmt',
+          format: LOG_FORMAT as 'logfmt' | 'json',
           level: LOG_LEVEL.toLowerCase() as LogLevel,
         },
       ],
       defaultMeta: {
         service,
       },
-    }),
-    ConfigModule.forRoot({
-      envFilePath: `.env`,
     }),
     SequelizeModule.forRootAsync({
       useFactory: () => ({

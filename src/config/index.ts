@@ -65,6 +65,14 @@ if (!process.env.RABBIT_PASSWORD) {
 if (!process.env.LOG_LEVEL) {
   throw new Error('LOG_LEVEL env is not defined');
 }
+if (
+  !process.env.LOG_FORMAT ||
+  (process.env.LOG_FORMAT &&
+    (process.env.LOG_FORMAT.toLowerCase() !== 'logfmt' ||
+      process.env.LOG_FORMAT.toLowerCase() !== 'json'))
+) {
+  throw new Error('LOG_FORMAT env is not defined');
+}
 if (!process.env.PORT) {
   throw new Error('PORT env is not defined');
 }
@@ -111,6 +119,7 @@ export const RABBIT_PROTOCOL = process.env.RABBIT_PROTOCOL;
 export const RABBIT_USER = process.env.RABBIT_USER;
 export const RABBIT_PASSWORD = process.env.RABBIT_PASSWORD;
 export const LOG_LEVEL = process.env.LOG_LEVEL;
+export const LOG_FORMAT = process.env.LOG_FORMAT.toLowerCase();
 export const PORT = process.env.PORT;
 export const EXPIRES_ACCESS_TOKEN = process.env.EXPIRES_ACCESS_TOKEN;
 export const EXPIRES_REFRESH_TOKEN = process.env.EXPIRES_REFRESH_TOKEN;

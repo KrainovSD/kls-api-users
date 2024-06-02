@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/order
+import { otelSDK } from './tracing';
+
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
@@ -21,6 +24,8 @@ import {
 } from './config';
 
 async function start() {
+  await otelSDK.start();
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),

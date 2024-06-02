@@ -1560,6 +1560,14 @@
     nest-winston "1.9.4"
     winston "3.10.0"
 
+"@krainovsd/nest-uploading-service@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@krainovsd/nest-uploading-service/-/nest-uploading-service-0.0.1.tgz#386c4c1eb22f4858974837d5eac5d925eeada212"
+  integrity sha512-suuywAWZJU71UswFMF54In5g4YrmNfuPmnoSmfjmSpQwlMKMsPJ4E7tmXZNVQ9/bzmcQXFyA6kQnRxQt7LJXNA==
+  dependencies:
+    "@aws-sdk/client-s3" "^3.577.0"
+    "@fastify/multipart" "^8.2.0"
+
 "@krainovsd/nest-utils@^0.0.4":
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/@krainovsd/nest-utils/-/nest-utils-0.0.4.tgz#1a7b4a2c3240c583a3a7960f8b471ab477c2d006"

@@ -68,8 +68,8 @@ if (!process.env.LOG_LEVEL) {
 if (
   !process.env.LOG_FORMAT ||
   (process.env.LOG_FORMAT &&
-    (process.env.LOG_FORMAT.toLowerCase() !== 'logfmt' ||
-      process.env.LOG_FORMAT.toLowerCase() !== 'json'))
+    process.env.LOG_FORMAT.toLowerCase() !== 'logfmt' &&
+    process.env.LOG_FORMAT.toLowerCase() !== 'json')
 ) {
   throw new Error('LOG_FORMAT env is not defined');
 }

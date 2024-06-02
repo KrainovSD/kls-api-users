@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Op } from 'sequelize';
 import { utils } from '@krainovsd/utils';
 import { hash as getHash } from 'bcryptjs';
+import { InjectS3, S3Service } from '@krainovsd/nest-uploading-service';
 
 import { User } from './users.model';
 import { SettingsService } from '../settings/settings.service';
@@ -44,7 +45,6 @@ import {
   UpdateWallpaperOptions,
 } from './users.typings';
 import { MailerService } from '../mailer';
-import { InjectS3, S3Service } from '../s3';
 
 @Injectable()
 export class UsersService {

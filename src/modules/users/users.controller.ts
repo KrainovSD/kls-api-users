@@ -12,6 +12,10 @@ import {
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@krainovsd/nest-jwt-service';
 import { OperationId, UserId } from '@krainovsd/nest-utils';
+import {
+  IncomingFile,
+  UploadInterceptor,
+} from '@krainovsd/nest-uploading-service';
 
 import { UsersService } from './users.service';
 import {} from './dto/change-nick-name.dto';
@@ -30,7 +34,6 @@ import {
   MIME_TYPE_AVATAR,
   MIME_TYPE_WALLPAPER,
 } from './users.constants';
-import { IncomingFile, UploadInterceptor } from '../../utils';
 
 @ApiTags('Пользователи')
 @Controller(`${API_VERSION.v1}/user`)

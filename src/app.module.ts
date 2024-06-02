@@ -8,6 +8,7 @@ import {
 import { TrimPipe, ValidationPipe } from '@krainovsd/nest-utils';
 import { JwtModule } from '@krainovsd/nest-jwt-service';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { S3Module } from '@krainovsd/nest-uploading-service';
 
 import { SettingsModule } from './modules/settings/settings.module';
 import { UsersModule } from './modules/users/users.module';
@@ -34,7 +35,6 @@ import {
   S3_REGION,
   S3_SECRET_KEY,
 } from './config';
-import { S3Module } from './modules/s3';
 
 @Module({
   imports: [
@@ -50,17 +50,16 @@ import { S3Module } from './modules/s3';
         service,
       },
     }),
-    SequelizeModule.forRootAsync({
-      useFactory: () => ({
-        dialect: 'postgres',
-        host: POSTGRES_HOST,
-        port: Number(POSTGRES_PORT),
-        username: POSTGRES_USER,
-        password: POSTGRES_PASSWORD,
-        database: POSTGRES_DB,
-        models: [User, Settings],
-        autoLoadModels: true,
-      }),
+    SequelizeModule.forRoot({
+      dialect: 'postgres',
+      host: POSTGRES_HOST,
+      port: Number(POSTGRES_PORT),
+      username: POSTGRES_USER,
+      password: POSTGRES_PASSWORD,
+      database: POSTGRES_DB,
+      models: [User, Settings],
+      autoLoadModels: true,
+      logging: false,
     }),
     JwtModule.forRoot({
       accessTokenSecret: ACCESS_TOKEN_SECRET,

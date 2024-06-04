@@ -2,12 +2,11 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
-  Inject,
 } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { utils } from '@krainovsd/utils';
 import { compare, hash as getHash } from 'bcryptjs';
-import { JWT_PROVIDER_MODULE, JwtService } from '@krainovsd/nest-jwt-service';
+import { InjectJWT, JwtService } from '@krainovsd/nest-jwt-service';
 
 import { UsersService, CreateUserDto } from '../users';
 import {
@@ -28,7 +27,7 @@ import { MailerService } from '../mailer';
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(JWT_PROVIDER_MODULE) private readonly jwtService: JwtService,
+    @InjectJWT() private readonly jwtService: JwtService,
     private readonly userService: UsersService,
     private readonly mailerService: MailerService,
   ) {}

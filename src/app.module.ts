@@ -15,10 +15,9 @@ import {
   UsersModule,
   MailerModule,
   AuthModule,
-  User,
-  Settings,
 } from '@modules';
 import { CURRENT_SERVICE } from '@constants';
+import { Settings, User } from '@database';
 
 import {
   ACCESS_TOKEN_SECRET,

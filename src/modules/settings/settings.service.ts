@@ -4,8 +4,8 @@ import { utils } from '@krainovsd/utils';
 import { v4 } from 'uuid';
 
 import { ERROR_MESSAGES, RESPONSE_MESSAGES } from '@constants';
+import { Settings } from '@database';
 
-import { Settings } from './settings.model';
 import {
   UpdateSettingsOptions,
   GetSettingsByUserIdOptions,

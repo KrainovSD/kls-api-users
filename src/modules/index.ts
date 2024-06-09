@@ -1,5 +1,5 @@
-export * from './auth';
-export * from './clients';
-export * from './mailer';
-export * from './settings';
-export * from './users';
+export { AuthModule } from './auth';
+export { ClientModule } from './clients';
+export { MailerModule } from './mailer';
+export { SettingsModule } from './settings';
+export { UsersModule } from './users';

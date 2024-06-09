@@ -6,7 +6,7 @@ import {
   RABBIT_PORT,
   RABBIT_PROTOCOL,
   RABBIT_USER,
-} from '../../config';
+} from '@config';
 
 export function getClientsOptions(
   name: string,

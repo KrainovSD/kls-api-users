@@ -23,7 +23,8 @@
       "@config": ["src/config"],
       "@constants": ["src/constants"],
       "@modules": ["src/modules"],
-      "@tracing": ["src/tracing"]
+      "@tracing": ["src/tracing"],
+      "@database": ["src/database"]
     }
   }
 }

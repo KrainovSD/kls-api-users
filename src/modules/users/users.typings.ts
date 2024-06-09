@@ -1,5 +1,5 @@
+import { UserCreationArgs } from '@database';
 import { ChangeEmailDto, ChangePassDto, DeleteUsersDto } from './dto';
-import { UserCreationArgs } from './users.model';
 
 export type DefaultInfo = {
   operationId: string;

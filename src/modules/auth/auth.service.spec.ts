@@ -11,10 +11,11 @@ import {
   REFRESH_TOKEN_SECRET,
 } from '@config';
 import { ERROR_MESSAGES } from '@constants';
-import { User, UsersService } from '@modules';
+import { User } from '@database';
 
 import { AuthService } from './auth.service';
 import { ConfirmDto } from './dto';
+import { UsersService } from '../users';
 
 describe('Auth Service', () => {
   let authService: AuthService;

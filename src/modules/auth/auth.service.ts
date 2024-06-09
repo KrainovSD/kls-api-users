@@ -14,7 +14,6 @@ import {
   RESPONSE_MESSAGES,
   SALT_ROUNDS,
 } from '@constants';
-// import { MailerService, UsersService, CreateUserDto } from '@modules';
 
 import {
   ConfirmOptions,

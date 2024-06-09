@@ -10,9 +10,9 @@ import {
 
 import { USER_SETTINGS_DEFAULT } from '@constants';
 // eslint-disable-next-line import/no-cycle
-// import { User } from '../users/users.model';
+import { User } from './users.model';
 
-type SettingCreationArgs = {
+export type SettingCreationArgs = {
   id: string;
   userId: string;
 };
@@ -36,7 +36,7 @@ export class Settings extends Model<Settings, SettingCreationArgs> {
     example: '3850de1c-6b55-47e5-817f-bd02aaa69cf9',
     description: 'Уникальный идентификатор пользователя',
   })
-  // @ForeignKey(() => User)
+  @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     allowNull: false,

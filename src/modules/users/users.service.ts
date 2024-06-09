@@ -15,14 +15,8 @@ import {
   RESPONSE_MESSAGES,
   SALT_ROUNDS,
 } from '@constants';
-// import {
-//   SettingsService,
-//   Settings,
-//   ClientService,
-//   MailerService,
-// } from '@modules';
+import { Settings, User } from '@database';
 
-import { User } from './users.model';
 import {
   CallChangeEmailOptions,
   CallChangePassOptions,
@@ -48,9 +42,7 @@ import {
   UpdateAvatarOptions,
   UpdateWallpaperOptions,
 } from './users.typings';
-import { Settings } from '../settings/settings.model';
-import { SettingsService } from '../settings/settings.service';
-
+import { SettingsService } from '../settings';
 import { MailerService } from '../mailer';
 import { ClientService } from '../clients';
 

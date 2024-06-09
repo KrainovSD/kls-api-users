@@ -9,4 +9,3 @@ export {
   DeleteUsersDto,
   GetUserDto,
 } from './dto';
-export { User } from './users.model';

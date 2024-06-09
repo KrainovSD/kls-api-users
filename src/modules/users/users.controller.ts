@@ -17,9 +17,15 @@ import {
   UploadInterceptor,
 } from '@krainovsd/nest-uploading-service';
 
+import {
+  MAX_SIZE_AVATAR,
+  MAX_SIZE_WALLPAPER,
+  MIME_TYPE_AVATAR,
+  MIME_TYPE_WALLPAPER,
+  ROUTE_PREFIX,
+} from '@constants';
+
 import { UsersService } from './users.service';
-import {} from './dto/change-nick-name.dto';
-import { API_VERSION } from '../../const';
 import {
   ChangeNickNameDto,
   ChangeEmailDto,
@@ -28,15 +34,9 @@ import {
   DeleteUsersDto,
   GetUserDto,
 } from './dto';
-import {
-  MAX_SIZE_AVATAR,
-  MAX_SIZE_WALLPAPER,
-  MIME_TYPE_AVATAR,
-  MIME_TYPE_WALLPAPER,
-} from './users.constants';
 
 @ApiTags('Пользователи')
-@Controller(`${API_VERSION.v1}/user`)
+@Controller(`${ROUTE_PREFIX.v1}/user`)
 export class UsersController {
   constructor(private readonly userServise: UsersService) {}
 

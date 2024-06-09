@@ -1551,10 +1551,10 @@
   dependencies:
     "@nestjs/jwt" "^10.2.0"
 
-"@krainovsd/nest-logger-service@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@krainovsd/nest-logger-service/-/nest-logger-service-0.1.2.tgz#dd03cc0697d0c49d711b52cd6f22dd7e4ecb708e"
-  integrity sha512-NKnpDHhhLkN9BEwVR7W37JGnubeClv1hcjncstMSdQ1qV0/oPrtajow26joDmUg5Rk8CKA9uQx0wRgUhKdMWfg==
+"@krainovsd/nest-logger-service@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@krainovsd/nest-logger-service/-/nest-logger-service-0.2.1.tgz#75cb8b3b15b7ce43c37c42eb5aa4f82771adfef2"
+  integrity sha512-O+8IgLgg0uxb24S32A56t+cSgoIVw5eDMSzxxq7hwB8vqJlNcxeHGCVrJgNboVqlLtaUdvBN+9YdwLfiCSCE+Q==
   dependencies:
     nest-winston "1.9.4"
     winston "3.10.0"
@@ -1567,10 +1567,10 @@
     "@aws-sdk/client-s3" "^3.577.0"
     "@fastify/multipart" "^8.2.0"
 
-"@krainovsd/nest-utils@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@krainovsd/nest-utils/-/nest-utils-0.0.4.tgz#1a7b4a2c3240c583a3a7960f8b471ab477c2d006"
-  integrity sha512-gUe0MpH9hCZwm/3DnCa/NOb0UeoZBv6gfY5yUk/dL6FFjI3A05zleal0Jaaia0epVycoamk0zFoOR7KISSC93w==
+"@krainovsd/nest-utils@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@krainovsd/nest-utils/-/nest-utils-0.1.0.tgz#6e98be570fed78af2564592fc13f9f058bbadaf6"
+  integrity sha512-uEpIiRzCg7IJ2wYgT5Iziw7In7KeYY4UufZxSLi2WMG6KM22Moinq4400YTyivmF0V3lDGsBTkAWbt365J+h3A==
 
 "@krainovsd/utils@^0.1.1":
   version "0.1.1"

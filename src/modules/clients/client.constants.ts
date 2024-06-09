@@ -1,10 +1,4 @@
-export const statistics = 'statistics';
-export const words = 'words';
+import { SERVICES } from '@constants';
 
-export const messages = {};
-
-export const events = {
-  createStatistics: 'create_statistics',
-  deleteStatistics: 'delete_statistics',
-  deleteWords: 'delete_words',
-};
+export const STATISTICS = SERVICES.statistics.queue;
+export const WORDS = SERVICES.words.queue;

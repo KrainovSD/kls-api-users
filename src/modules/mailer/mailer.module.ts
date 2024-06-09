@@ -1,6 +1,8 @@
 import { MailerModule as Mailer } from '@nestjs-modules/mailer';
 import { Global, Module } from '@nestjs/common';
-import { MAIL_LOGIN, MAIL_PASSWORD } from '../../config';
+
+import { MAIL_LOGIN, MAIL_PASSWORD } from '@config';
+
 import { MailerService } from './mailer.service';
 
 @Global()

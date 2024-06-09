@@ -3,8 +3,9 @@ import { InjectModel } from '@nestjs/sequelize';
 import { utils } from '@krainovsd/utils';
 import { v4 } from 'uuid';
 
+import { ERROR_MESSAGES, RESPONSE_MESSAGES } from '@constants';
+
 import { Settings } from './settings.model';
-import { ERROR_MESSAGES, RESPONSE_MESSAGES } from '../../const';
 import {
   UpdateSettingsOptions,
   GetSettingsByUserIdOptions,

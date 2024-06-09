@@ -13,11 +13,17 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "baseUrl": "./",
     "rootDirs": ["./src"],
     "outDir": "./dist",
     "typeRoots": ["node_modules/@types", "./src/typings"],
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@config": ["src/config"],
+      "@constants": ["src/constants"],
+      "@modules": ["src/modules"],
+      "@tracing": ["src/tracing"]
+    }
   }
 }

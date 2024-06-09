@@ -9,16 +9,20 @@ import { utils } from '@krainovsd/utils';
 import { hash as getHash } from 'bcryptjs';
 import { InjectS3, S3Service } from '@krainovsd/nest-uploading-service';
 
-import { User } from './users.model';
-import { SettingsService } from '../settings/settings.service';
-import { Settings } from '../settings/settings.model';
 import {
   ERROR_MESSAGES,
   MAIL_MESSAGES_OPTION,
   RESPONSE_MESSAGES,
   SALT_ROUNDS,
-} from '../../const';
-import { ClientService } from '../clients/client.service';
+} from '@constants';
+import {
+  SettingsService,
+  Settings,
+  ClientService,
+  MailerService,
+} from '@modules';
+
+import { User } from './users.model';
 import {
   CallChangeEmailOptions,
   CallChangePassOptions,
@@ -44,7 +48,9 @@ import {
   UpdateAvatarOptions,
   UpdateWallpaperOptions,
 } from './users.typings';
-import { MailerService } from '../mailer';
+// import { Settings, SettingsService } from '../settings';
+// import { MailerService } from '../mailer';
+// import { ClientService } from '../clients';
 
 @Injectable()
 export class UsersService {
@@ -82,7 +88,7 @@ export class UsersService {
       const lastDateChange = user.passwordChangeDate;
       lastDateChange.setDate(lastDateChange.getDate() + 1);
       if (lastDateChange > new Date())
-        throw new BadRequestException(ERROR_MESSAGES.oftenChage);
+        throw new BadRequestException(ERROR_MESSAGES.oftenChangeData);
     }
     if (user.passwordChangeTime && user.passwordChangeTime > new Date())
       throw new BadRequestException(ERROR_MESSAGES.oftenTryChange);
@@ -137,7 +143,7 @@ export class UsersService {
       const lastDateChange = user.emailChangeDate;
       lastDateChange.setDate(lastDateChange.getDate() + 1);
       if (lastDateChange > new Date())
-        throw new BadRequestException(ERROR_MESSAGES.oftenChage);
+        throw new BadRequestException(ERROR_MESSAGES.oftenChangeData);
     }
     if (user.emailChangeTime && user.emailChangeTime > new Date())
       throw new BadRequestException(ERROR_MESSAGES.oftenTryChange);
@@ -198,7 +204,7 @@ export class UsersService {
       const lastDateChange = user.nickNameChangeDate;
       lastDateChange.setMonth(lastDateChange.getMonth() + 1);
       if (lastDateChange > new Date())
-        throw new BadRequestException(ERROR_MESSAGES.changeNickName);
+        throw new BadRequestException(ERROR_MESSAGES.changedNickName);
     }
     await this.checkUniqueNickName({ nickName, ...rest });
 

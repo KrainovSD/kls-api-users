@@ -7,9 +7,10 @@ import {
   Sequelize,
   Table,
 } from 'sequelize-typescript';
+
+import { USER_SETTINGS_DEFAULT } from '@constants';
 // eslint-disable-next-line import/no-cycle
 import { User } from '../users/users.model';
-import { SETTINGS_DEFAULT } from './settings.constants';
 
 type SettingCreationArgs = {
   id: string;
@@ -48,7 +49,7 @@ export class Settings extends Model<Settings, SettingCreationArgs> {
   })
   @Column({
     type: DataType.INTEGER,
-    defaultValue: SETTINGS_DEFAULT.knownWordsCount,
+    defaultValue: USER_SETTINGS_DEFAULT.knownWordsCount,
     allowNull: false,
   })
   knownWordsCount!: number;
@@ -60,7 +61,7 @@ export class Settings extends Model<Settings, SettingCreationArgs> {
   })
   @Column({
     type: DataType.INTEGER,
-    defaultValue: SETTINGS_DEFAULT.mistakesInWordsCount,
+    defaultValue: USER_SETTINGS_DEFAULT.mistakesInWordsCount,
     allowNull: false,
   })
   mistakesInWordsCount!: number;
@@ -72,7 +73,7 @@ export class Settings extends Model<Settings, SettingCreationArgs> {
   })
   @Column({
     type: DataType.ARRAY(DataType.INTEGER),
-    defaultValue: SETTINGS_DEFAULT.repeatWordsRegularity,
+    defaultValue: USER_SETTINGS_DEFAULT.repeatWordsRegularity,
     allowNull: false,
   })
   repeatWordsRegularity!: number[];
@@ -84,7 +85,7 @@ export class Settings extends Model<Settings, SettingCreationArgs> {
   })
   @Column({
     type: DataType.INTEGER,
-    defaultValue: SETTINGS_DEFAULT.relevanceObserveDay,
+    defaultValue: USER_SETTINGS_DEFAULT.relevanceObserveDay,
     allowNull: false,
   })
   relevanceObserveDay!: number;
@@ -96,7 +97,7 @@ export class Settings extends Model<Settings, SettingCreationArgs> {
   })
   @Column({
     type: DataType.INTEGER,
-    defaultValue: SETTINGS_DEFAULT.relevanceObserveCount,
+    defaultValue: USER_SETTINGS_DEFAULT.relevanceObserveCount,
     allowNull: false,
   })
   relevanceObserveCount!: number;

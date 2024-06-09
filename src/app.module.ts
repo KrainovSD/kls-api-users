@@ -10,13 +10,16 @@ import { JwtModule } from '@krainovsd/nest-jwt-service';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { S3Module } from '@krainovsd/nest-uploading-service';
 
-import { SettingsModule } from './modules/settings/settings.module';
-import { UsersModule } from './modules/users/users.module';
-import { MailerModule } from './modules/mailer';
-import { AuthModule } from './modules/auth/auth.module';
-import { User } from './modules/users/users.model';
-import { Settings } from './modules/settings/settings.model';
-import { service } from './const';
+import {
+  SettingsModule,
+  UsersModule,
+  MailerModule,
+  AuthModule,
+  User,
+  Settings,
+} from '@modules';
+import { CURRENT_SERVICE } from '@constants';
+
 import {
   ACCESS_TOKEN_SECRET,
   EXPIRES_ACCESS_TOKEN,
@@ -47,17 +50,17 @@ import {
         },
       ],
       defaultMeta: {
-        service,
+        service: CURRENT_SERVICE,
       },
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
       host: POSTGRES_HOST,
-      port: Number(POSTGRES_PORT),
+      port: POSTGRES_PORT,
       username: POSTGRES_USER,
       password: POSTGRES_PASSWORD,
       database: POSTGRES_DB,
-      models: [User, Settings],
+      models: [Settings],
       autoLoadModels: true,
       logging: false,
     }),
@@ -79,10 +82,10 @@ import {
       //     requestTimeout: 30000,
       //   },
     }),
-    SettingsModule,
-    UsersModule,
-    AuthModule,
-    MailerModule,
+    // SettingsModule,
+    // UsersModule,
+    // AuthModule,
+    // MailerModule,
   ],
   controllers: [],
   providers: [

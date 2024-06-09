@@ -1,5 +1,3 @@
-export type ClientsKeys = 'statistics' | 'words';
-
 export type DefaultInfo = {
   operationId: string;
 };
@@ -29,13 +27,13 @@ export type DeleteWordsPayload = {
 };
 
 export type SendMessageToMicroserviceOptions = {
-  microservice: ClientsKeys;
+  microservice: string;
   pattern: string;
   value: unknown;
 } & DefaultInfo;
 
 export type SendEventToMicroserviceOptions = {
-  microservice: ClientsKeys;
+  microservice: string;
   pattern: string;
   value: unknown;
 } & DefaultInfo;

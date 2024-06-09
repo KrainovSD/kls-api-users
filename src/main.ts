@@ -8,11 +8,13 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import fastifyCookie from '@fastify/cookie';
-import { join } from 'path';
 import fastifyHelmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-import { API_VERSION, services } from './const';
+import { join } from 'path';
+
+import { ROUTE_PREFIX, SERVICES } from '@constants';
+
 import { AppModule } from './app.module';
 import {
   PORT,
@@ -47,7 +49,7 @@ async function start() {
 
   app.useStaticAssets({
     root: join(__dirname, '../../upload'),
-    prefix: `/${API_VERSION.v1}/static`,
+    prefix: `/${ROUTE_PREFIX.v1}/static`,
   });
 
   app.register(fastifyCookie, {
@@ -67,21 +69,21 @@ async function start() {
     customSiteTitle: 'Swagger KLS Users',
   });
 
-  const microservice = app.connectMicroservice<MicroserviceOptions>(
+  app.connectMicroservice<MicroserviceOptions>(
     {
       transport: Transport.RMQ,
       options: {
         urls: [
           {
-            hostname: RABBIT_HOST ?? 'localhost',
-            port: RABBIT_PORT ? Number(RABBIT_PORT) : 5672,
-            protocol: RABBIT_PROTOCOL ?? 'amqp',
-            username: RABBIT_USER ?? 'guest',
-            password: RABBIT_PASSWORD ?? 'guest',
+            hostname: RABBIT_HOST,
+            port: RABBIT_PORT,
+            protocol: RABBIT_PROTOCOL,
+            username: RABBIT_USER,
+            password: RABBIT_PASSWORD,
           },
         ],
         noAck: false,
-        queue: services.users.queue,
+        queue: SERVICES.users.queue,
         queueOptions: {
           durable: false,
         },

@@ -1,0 +1,121 @@
+{
+  "settings": {
+    "expiresCookies": 2073600000,
+    "expiresCache": 86400,
+    "saltRounds": 10,
+    "routePrefix": {
+      "v1": "api/v1"
+    },
+    "currentService": "users",
+    "services": {
+      "info": {
+        "users": {
+          "alias": "USERS_SERVICE",
+          "queue": "users"
+        },
+        "statistics": {
+          "alias": "STATISTICS_SERVICE",
+          "queue": "statistics"
+        },
+        "words": {
+          "alias": "WORDS_SERVICE",
+          "queue": "words"
+        }
+      },
+      "events": {
+        "createStatistics": "create_statistics",
+        "deleteStatistics": "delete_statistics",
+        "deleteWords": "delete_words"
+      }
+    },
+    "defaultUserSettings": {
+      "knownWordsCount": 50,
+      "mistakesInWordsCount": 3,
+      "repeatWordsRegularity": [2, 2, 2, 4, 4, 4, 8, 8],
+      "relevanceObserveDay": 45,
+      "relevanceObserveCount": 3
+    },
+    "uploads": {
+      "maxSizeAvatar": 2097152,
+      "maxSizeWallpaper": 2097152,
+      "mimeTypeAvatar": "/(png|jpeg|jpg|gif)$",
+      "mimeTypeWallpaper": "/(png|jpeg|jpg|gif)$"
+    }
+  },
+  "texts": {
+    "swagger": {
+      "descriptions": {
+        "actionSuccess": "Операция прошла успешно!",
+        "badRequest": "При возникновении ошибки валидации, возвращает объект содержащий в качестве ключей названия переменных из формы, которые не прошли валидацию. В качестве значений ключей выступает массив строк с описанием проваленных валидаций."
+      }
+    },
+    "responses": {
+      "success": {
+        "code": 1,
+        "message": "Success."
+      },
+      "sendNewEmail": {
+        "code": 10,
+        "message": "The key has send to your email."
+      },
+      "sendEmail": {
+        "code": 11,
+        "message": "The key has send to your email."
+      }
+    },
+    "errors": {
+      "badKeyOrTime": {
+        "code": 1000,
+        "message": "Time has expired or key is invalid."
+      },
+      "oftenChangeData": {
+        "code": 1001,
+        "message": "Too often change data."
+      },
+      "oftenTryChange": {
+        "code": 1002,
+        "message": "Too often try change."
+      },
+      "hasNickName": {
+        "code": 1003,
+        "message": "Nickname already is used"
+      },
+      "hasEmail": {
+        "code": 1004,
+        "message": "Email already is used."
+      },
+      "changedNickName": {
+        "code": 1005,
+        "message": "Too often change nickname."
+      },
+      "userNotFound": {
+        "code": 1006,
+        "message": "User not found."
+      },
+      "infoNotFound": {
+        "code": 1007,
+        "message": "Info not found."
+      },
+      "badEmail": {
+        "code": 1008,
+        "message": "Bad email."
+      }
+    },
+    "mail": {
+      "messages": {
+        "changePassword": {
+          "title": "Смена пароля",
+          "message": "Получен запрос на смену пароля на вашем аккаунте. Если этот запрос был отправлен не вами, просто проигнорируйте сообщение. Для завершения операции смена пароля воспользуйтесь следующим кодом"
+        },
+        "callChangeEmail": {
+          "title": "Смена адреса электронной почты",
+          "message": "Получен запрос на смену адреса электронной почты на вашем аккаунте. Если этот запрос был отправлен не вами, просто проигнорируйте сообщение. Для продолжения операции смены адреса электронной почты воспользуйтесь следующим кодом"
+        },
+        "regiser": {
+          "title": "Активация аккаунта",
+          "message": "Чтобы подтвердить свой Email на Krainov Learn Service и активировать аккаунт воспользуйтесь следующим кодом"
+        }
+      }
+    }
+  }
+}

@@ -11,10 +11,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { OperationId, UserId } from '@krainovsd/nest-utils';
 import { AuthGuard } from '@krainovsd/nest-jwt-service';
 import { FastifyReply, FastifyRequest } from 'fastify';
+
+import { EXPIRES_COOKIES, RESPONSE_MESSAGES, ROUTE_PREFIX } from '@constants';
+import { CreateUserDto } from '@modules';
+
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../users';
 import { ConfirmDto, LoginDto } from './dto';
-import { API_VERSION, EXPIRES_COOKIES, RESPONSE_MESSAGES } from '../../const';
 
 type CookieOptions = {
   sameSite: 'strict';
@@ -24,7 +26,7 @@ type CookieOptions = {
 };
 
 @ApiTags('Авторизация')
-@Controller(`${API_VERSION.v1}/auth`)
+@Controller(`${ROUTE_PREFIX.v1}/auth`)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

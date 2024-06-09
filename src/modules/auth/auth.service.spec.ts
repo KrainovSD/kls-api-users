@@ -4,17 +4,17 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { JwtModule } from '@krainovsd/nest-jwt-service';
 import { utils } from '@krainovsd/utils';
 
-import { ERROR_MESSAGES } from '../../const';
-import { AuthService } from './auth.service';
-import { ConfirmDto } from './dto';
-import { UsersService } from '../users';
-import { User } from '../users/users.model';
 import {
   ACCESS_TOKEN_SECRET,
   EXPIRES_ACCESS_TOKEN,
   EXPIRES_REFRESH_TOKEN,
   REFRESH_TOKEN_SECRET,
-} from '../../config';
+} from '@config';
+import { ERROR_MESSAGES } from '@constants';
+import { User, UsersService } from '@modules';
+
+import { AuthService } from './auth.service';
+import { ConfirmDto } from './dto';
 
 describe('Auth Service', () => {
   let authService: AuthService;
@@ -76,7 +76,7 @@ describe('Auth Service', () => {
         .mockImplementation(async () => null);
       await expect(
         authService.confirm({ confirmDto, operationId }),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it('email change time has expired', async () => {
       jest.spyOn(usersService, 'getUserByEmailChangeKey').mockImplementation(
@@ -87,7 +87,7 @@ describe('Auth Service', () => {
       );
       await expect(
         authService.confirm({ confirmDto, operationId }),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`haven't email to change`, async () => {
       jest.spyOn(usersService, 'getUserByEmailChangeKey').mockImplementation(
@@ -98,7 +98,7 @@ describe('Auth Service', () => {
       );
       await expect(
         authService.confirm({ confirmDto, operationId }),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`success`, async () => {
       jest.spyOn(usersService, 'getUserByEmailChangeKey').mockImplementation(

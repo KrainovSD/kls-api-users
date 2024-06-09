@@ -1,4 +1,5 @@
 import { ClientsModuleOptions, Transport } from '@nestjs/microservices';
+
 import {
   RABBIT_HOST,
   RABBIT_PASSWORD,
@@ -18,11 +19,11 @@ export function getClientsOptions(
       options: {
         urls: [
           {
-            hostname: RABBIT_HOST ?? 'localhost',
-            port: RABBIT_PORT ? Number(RABBIT_PORT) : 5672,
-            protocol: RABBIT_PROTOCOL ?? 'amqp',
-            username: RABBIT_USER ?? 'guest',
-            password: RABBIT_PASSWORD ?? 'guest',
+            hostname: RABBIT_HOST,
+            port: RABBIT_PORT,
+            protocol: RABBIT_PROTOCOL,
+            username: RABBIT_USER,
+            password: RABBIT_PASSWORD,
           },
         ],
         queue,

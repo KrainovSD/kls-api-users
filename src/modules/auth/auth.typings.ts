@@ -1,4 +1,5 @@
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { CreateUserDto } from '@modules';
+
 import { ConfirmDto } from './dto/confirm.dto';
 import { LoginDto } from './dto/login.dto';
 

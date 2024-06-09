@@ -5,13 +5,13 @@ import { AuthGuard } from '@krainovsd/nest-jwt-service';
 import { OperationId, UserId } from '@krainovsd/nest-utils';
 import { v4 } from 'uuid';
 
-import { UpdateSettingsDto } from './dto/update-settings.dto';
+import { ROUTE_PREFIX } from '@constants';
+
 import { SettingsService } from './settings.service';
-import { API_VERSION } from '../../const';
-import { GetSettingsMessageDto } from './dto/get-settings-message.dto';
+import { GetSettingsMessageDto, UpdateSettingsDto } from './dto';
 
 @ApiTags('Настройки')
-@Controller(`${API_VERSION.v1}/settings`)
+@Controller(`${ROUTE_PREFIX.v1}/settings`)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 

@@ -2,15 +2,15 @@ import { getModelToken } from '@nestjs/sequelize';
 import { Test } from '@nestjs/testing';
 import { Provider } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import { LOGGER_TOKEN } from '@krainovsd/nest-logger-service';
+import { utils } from '@krainovsd/utils';
 
-import { ClientService } from '../clients/client.service';
+import { ClientService, SettingsService } from '@modules';
+import { ERROR_MESSAGES } from '@constants';
+
 import { UsersService } from './users.service';
 import { User } from './users.model';
-import { ERROR_MESSAGES } from '../../const';
-import { SettingsService } from '../settings/settings.service';
-import { ChangePassDto } from './dto/change-pass.dto';
-import { ChangeEmailDto } from './dto/change-email.dto';
-import { LOGGER_TOKEN } from '@krainovsd/nest-logger-service';
+import { ChangePassDto, ChangeEmailDto } from './dto';
 
 describe('Users Service', () => {
   let usersService: UsersService;
@@ -85,26 +85,26 @@ describe('Users Service', () => {
   describe('callChangePass', () => {
     let email: string;
     let userId: string;
-    let traceId: string;
+    let operationId: string;
 
     beforeEach(() => {
       email = 'test';
       userId = '0';
-      traceId = '0';
+      operationId = '0';
     });
 
     it('bad email', async () => {
       await expect(
-        usersService.callChangePass(email, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.badEmail);
+        usersService.callChangePass({ email, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.badEmail.message);
     });
     it('repeated actions within 24hours', async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
         passwordChangeDate: utils.date.getDate(-2, 'hours'),
       } as any);
       await expect(
-        usersService.callChangePass(email, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.oftenChage);
+        usersService.callChangePass({ email, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.oftenChangeData.message);
     });
     it('repeated actions until the end previous', async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
@@ -112,8 +112,8 @@ describe('Users Service', () => {
         passwordChangeTime: utils.date.getDate(5, 'minutes'),
       } as any);
       await expect(
-        usersService.callChangePass(email, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.oftenTryChange);
+        usersService.callChangePass({ email, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.oftenTryChange.message);
     });
     it('success', async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
@@ -122,7 +122,7 @@ describe('Users Service', () => {
         save: () => null,
       } as any);
       await expect(
-        usersService.callChangePass(email, userId, traceId),
+        usersService.callChangePass({ email, userId, operationId }),
       ).resolves.toBeTruthy();
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
         passwordChangeDate: utils.date.getDate(-1, 'days'),
@@ -130,42 +130,42 @@ describe('Users Service', () => {
         save: () => null,
       } as any);
       await expect(
-        usersService.callChangePass(email, userId, traceId),
+        usersService.callChangePass({ email, userId, operationId }),
       ).resolves.toBeTruthy();
     });
   });
   describe('changePass', () => {
     let dto: ChangePassDto;
     let userId: string;
-    let traceId: string;
+    let operationId: string;
 
     beforeEach(() => {
       dto = { key: '0', password: '0' };
       userId = '0';
-      traceId = '0';
+      operationId = '0';
     });
 
     it(`couldn't found user`, async () => {
-      jest.spyOn(usersModel, 'findOne').mockReturnValue(null as any);
+      jest.spyOn(usersModel, 'findOne').mockImplementation(async () => null);
       await expect(
-        usersService.changePass(dto, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+        usersService.changePass({ dto, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`user haven't change time`, async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
         passwordChangeTime: null,
       } as any);
       await expect(
-        usersService.changePass(dto, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+        usersService.changePass({ dto, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`user's change time has expired`, async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
         passwordChangeTime: utils.date.getDate(-1, 'minutes'),
       } as any);
       await expect(
-        usersService.changePass(dto, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+        usersService.changePass({ dto, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`success`, async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
@@ -173,31 +173,31 @@ describe('Users Service', () => {
         save: () => null,
       } as any);
       await expect(
-        usersService.changePass(dto, userId, traceId),
+        usersService.changePass({ dto, userId, operationId }),
       ).resolves.toBeTruthy();
     });
   });
   describe('callChangeEmail', () => {
     let userId: string;
-    let traceId: string;
+    let operationId: string;
 
     beforeEach(() => {
       userId = '0';
-      traceId = '0';
+      operationId = '0';
     });
 
     it('bad userId', async () => {
       await expect(
-        usersService.callChangeEmail(userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.userNotFound);
+        usersService.callChangeEmail({ userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.userNotFound.message);
     });
     it('repeated actions within 24hours', async () => {
       jest.spyOn(usersModel, 'findByPk').mockReturnValue({
         emailChangeDate: utils.date.getDate(-2, 'hours'),
       } as any);
       await expect(
-        usersService.callChangeEmail(userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.oftenChage);
+        usersService.callChangeEmail({ userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.oftenChangeData.message);
     });
     it('repeated actions until the end previous', async () => {
       jest.spyOn(usersModel, 'findByPk').mockReturnValue({
@@ -205,8 +205,8 @@ describe('Users Service', () => {
         emailChangeTime: utils.date.getDate(5, 'minutes'),
       } as any);
       await expect(
-        usersService.callChangeEmail(userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.oftenTryChange);
+        usersService.callChangeEmail({ userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.oftenTryChange.message);
     });
     it('success', async () => {
       jest.spyOn(usersModel, 'findByPk').mockReturnValue({
@@ -215,7 +215,7 @@ describe('Users Service', () => {
         save: () => null,
       } as any);
       await expect(
-        usersService.callChangeEmail(userId, traceId),
+        usersService.callChangeEmail({ userId, operationId }),
       ).resolves.toBeTruthy();
       jest.spyOn(usersModel, 'findByPk').mockReturnValue({
         emailChangeDate: utils.date.getDate(-25, 'hours'),
@@ -223,42 +223,42 @@ describe('Users Service', () => {
         save: () => null,
       } as any);
       await expect(
-        usersService.callChangeEmail(userId, traceId),
+        usersService.callChangeEmail({ userId, operationId }),
       ).resolves.toBeTruthy();
     });
   });
   describe('changeEmail', () => {
     let dto: ChangeEmailDto;
     let userId: string;
-    let traceId: string;
+    let operationId: string;
 
     beforeEach(() => {
       dto = { key: '0', email: 'test@gmail.com' };
       userId = '0';
-      traceId = '0';
+      operationId = '0';
     });
 
     it(`couldn't found user`, async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue(null as any);
       await expect(
-        usersService.changeEmail(dto, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+        usersService.changeEmail({ dto, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`user haven't change time`, async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
         emailChangeTime: null,
       } as any);
       await expect(
-        usersService.changeEmail(dto, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+        usersService.changeEmail({ dto, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`user's change time has expired`, async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
         emailChangeTime: utils.date.getDate(-1, 'minutes'),
       } as any);
       await expect(
-        usersService.changeEmail(dto, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+        usersService.changeEmail({ dto, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`not compared userId`, async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValue({
@@ -266,8 +266,8 @@ describe('Users Service', () => {
         id: '1',
       } as any);
       await expect(
-        usersService.changeEmail(dto, userId, traceId),
-      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime);
+        usersService.changeEmail({ dto, userId, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`success`, async () => {
       jest.spyOn(usersModel, 'findOne').mockReturnValueOnce({
@@ -276,7 +276,7 @@ describe('Users Service', () => {
         save: () => null,
       } as any);
       await expect(
-        usersService.changeEmail(dto, userId, traceId),
+        usersService.changeEmail({ dto, userId, operationId }),
       ).resolves.toBeTruthy();
     });
   });

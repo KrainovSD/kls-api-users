@@ -8,13 +8,14 @@ import { utils } from '@krainovsd/utils';
 import { compare, hash as getHash } from 'bcryptjs';
 import { InjectJWT, JwtService } from '@krainovsd/nest-jwt-service';
 
-import { UsersService, CreateUserDto } from '../users';
 import {
   ERROR_MESSAGES,
   MAIL_MESSAGES_OPTION,
   RESPONSE_MESSAGES,
   SALT_ROUNDS,
-} from '../../const';
+} from '@constants';
+import { MailerService, UsersService, CreateUserDto } from '@modules';
+
 import {
   ConfirmOptions,
   LoginOptions,
@@ -22,7 +23,6 @@ import {
   RegisterOptions,
   TokenOptions,
 } from './auth.typings';
-import { MailerService } from '../mailer';
 
 @Injectable()
 export class AuthService {

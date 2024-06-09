@@ -2,10 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { LOGGER_TOKEN, LoggerService } from '@krainovsd/nest-logger-service';
 import { timeout } from 'rxjs';
-import { events, statistics, words } from './client.constants';
-import { services } from '../../const';
+
+import { SERVICES, SERVICES_EVENTS } from '@constants';
+
 import {
-  ClientsKeys,
   CreateStatisticOptions,
   CreateStatisticPayload,
   DeleteStatisticsOptions,
@@ -15,17 +15,18 @@ import {
   SendEventToMicroserviceOptions,
   SendMessageToMicroserviceOptions,
 } from './client.typings';
+import { STATISTICS, WORDS } from './client.constants';
 
 @Injectable()
 export class ClientService {
-  private clients: Record<ClientsKeys, ClientProxy> = {
-    statistics: this.clientStatistics,
-    words: this.clientWords,
+  private clients: Record<string, ClientProxy> = {
+    [STATISTICS]: this.clientStatistics,
+    [WORDS]: this.clientWords,
   };
 
   constructor(
-    @Inject(services.statistics.alias) private clientStatistics: ClientProxy,
-    @Inject(services.words.alias) private clientWords: ClientProxy,
+    @Inject(SERVICES.statistics.alias) private clientStatistics: ClientProxy,
+    @Inject(SERVICES.words.alias) private clientWords: ClientProxy,
 
     @Inject(LOGGER_TOKEN)
     private readonly logger: LoggerService,
@@ -90,8 +91,8 @@ export class ClientService {
       userId,
     };
     await this.sendEventToMicroservice({
-      microservice: statistics,
-      pattern: events.createStatistics,
+      microservice: STATISTICS,
+      pattern: SERVICES_EVENTS.createStatistics,
       value: args,
       operationId,
     });
@@ -102,8 +103,8 @@ export class ClientService {
       userIds,
     };
     await this.sendEventToMicroservice({
-      microservice: statistics,
-      pattern: events.deleteStatistics,
+      microservice: STATISTICS,
+      pattern: SERVICES_EVENTS.deleteStatistics,
       value: args,
       operationId,
     });
@@ -114,8 +115,8 @@ export class ClientService {
       userIds,
     };
     await this.sendEventToMicroservice({
-      microservice: words,
-      pattern: events.deleteWords,
+      microservice: WORDS,
+      pattern: SERVICES_EVENTS.deleteWords,
       value: args,
       operationId,
     });

@@ -7,6 +7,7 @@ import {
   Sequelize,
   Table,
 } from 'sequelize-typescript';
+
 // eslint-disable-next-line import/no-cycle
 import { Settings } from '../settings/settings.model';
 

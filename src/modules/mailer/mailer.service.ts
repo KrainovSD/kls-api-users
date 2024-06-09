@@ -2,7 +2,8 @@ import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { MailerService as Mailer } from '@nestjs-modules/mailer';
 import { LOGGER_TOKEN, LoggerService } from '@krainovsd/nest-logger-service';
 
-import { MAIL_LOGIN } from '../../config';
+import { MAIL_LOGIN } from '@config';
+
 import { SendMailOptions } from './mailer.typings';
 
 @Injectable()

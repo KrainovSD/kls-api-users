@@ -9,7 +9,7 @@ import {
 } from 'sequelize-typescript';
 
 // eslint-disable-next-line import/no-cycle
-import { Settings } from '../settings/settings.model';
+// import { Settings } from '../settings/settings.model';
 
 export interface UserCreationArgs {
   id: string;
@@ -243,6 +243,6 @@ export class User extends Model<User, UserCreationArgs> {
   })
   nickNameChangeDate!: Date | null;
 
-  @HasOne(() => Settings, { onDelete: 'CASCADE' })
-  settings!: Settings;
+  // @HasOne(() => Settings, { onDelete: 'CASCADE' })
+  // settings!: Settings;
 }

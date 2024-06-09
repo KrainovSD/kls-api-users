@@ -13,10 +13,11 @@ import { AuthGuard } from '@krainovsd/nest-jwt-service';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 import { EXPIRES_COOKIES, RESPONSE_MESSAGES, ROUTE_PREFIX } from '@constants';
-import { CreateUserDto } from '@modules';
+// import { CreateUserDto } from '@modules';
 
 import { AuthService } from './auth.service';
 import { ConfirmDto, LoginDto } from './dto';
+import { CreateUserDto } from '../users';
 
 type CookieOptions = {
   sameSite: 'strict';

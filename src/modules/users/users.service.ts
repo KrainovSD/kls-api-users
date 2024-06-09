@@ -15,12 +15,12 @@ import {
   RESPONSE_MESSAGES,
   SALT_ROUNDS,
 } from '@constants';
-import {
-  SettingsService,
-  Settings,
-  ClientService,
-  MailerService,
-} from '@modules';
+// import {
+//   SettingsService,
+//   Settings,
+//   ClientService,
+//   MailerService,
+// } from '@modules';
 
 import { User } from './users.model';
 import {
@@ -48,9 +48,11 @@ import {
   UpdateAvatarOptions,
   UpdateWallpaperOptions,
 } from './users.typings';
-// import { Settings, SettingsService } from '../settings';
-// import { MailerService } from '../mailer';
-// import { ClientService } from '../clients';
+import { Settings } from '../settings/settings.model';
+import { SettingsService } from '../settings/settings.service';
+
+import { MailerService } from '../mailer';
+import { ClientService } from '../clients';
 
 @Injectable()
 export class UsersService {

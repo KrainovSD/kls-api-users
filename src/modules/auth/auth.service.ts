@@ -14,7 +14,7 @@ import {
   RESPONSE_MESSAGES,
   SALT_ROUNDS,
 } from '@constants';
-import { MailerService, UsersService, CreateUserDto } from '@modules';
+// import { MailerService, UsersService, CreateUserDto } from '@modules';
 
 import {
   ConfirmOptions,
@@ -23,6 +23,8 @@ import {
   RegisterOptions,
   TokenOptions,
 } from './auth.typings';
+import { CreateUserDto, UsersService } from '../users';
+import { MailerService } from '../mailer';
 
 @Injectable()
 export class AuthService {

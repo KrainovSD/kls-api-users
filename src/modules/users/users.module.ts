@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 
-import { SettingsModule, Settings, ClientModule } from '@modules';
+// import { SettingsModule, Settings, ClientModule } from '@modules';
 
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { User } from './users.model';
+import { Settings, SettingsModule } from '../settings';
+import { ClientModule } from '../clients';
 
 @Module({
   imports: [

@@ -56,7 +56,11 @@
       "emailChangeDate",
       "emailToChange",
       "nickNameChangeDate"
-    ]
+    ],
+    "passwordChangeTime": 300,
+    "dataChangeTimeout": 86400,
+    "emailChangeTime": 300,
+    "nickNameChangeTimeout": 2592000
   },
   "texts": {
     "swagger": {

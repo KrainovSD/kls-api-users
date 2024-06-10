@@ -7,8 +7,12 @@ import { utils } from '@krainovsd/utils';
 import { hash as getHash } from 'bcryptjs';
 
 import {
+  DATA_CHANGE_TIMEOUT,
+  EMAIL_CHANGE_TIME,
   ERROR_MESSAGES,
   MAIL_MESSAGES_OPTION,
+  NICK_NAME_CHANGE_TIMEOUT,
+  PASSWORD_CHANGE_TIME,
   RESPONSE_MESSAGES,
   SALT_ROUNDS,
 } from '@constants';
@@ -48,24 +52,27 @@ export class UsersService {
     if (!user) throw new BadRequestException(ERROR_MESSAGES.badEmail);
 
     if (user.passwordChangeDate) {
-      const lastDateChange = user.passwordChangeDate;
-      lastDateChange.setDate(lastDateChange.getDate() + 1);
+      const lastDateChange = utils.date.getDate(
+        DATA_CHANGE_TIMEOUT,
+        'seconds',
+        user.passwordChangeDate,
+      );
       if (lastDateChange > new Date())
         throw new BadRequestException(ERROR_MESSAGES.oftenChangeData);
     }
     if (user.passwordChangeTime && user.passwordChangeTime > new Date())
       throw new BadRequestException(ERROR_MESSAGES.oftenTryChange);
 
-    const passwordChangeKey = utils.common.getRandomId();
-    const passwordChangeTime = new Date();
-    passwordChangeTime.setMinutes(passwordChangeTime.getMinutes() + 5);
-    user.passwordChangeKey = passwordChangeKey;
-    user.passwordChangeTime = passwordChangeTime;
+    user.passwordChangeKey = utils.common.getRandomId();
+    user.passwordChangeTime = utils.date.getDate(
+      PASSWORD_CHANGE_TIME,
+      'seconds',
+    );
     await user.save();
     await this.mailerService.sendMail({
       subject: MAIL_MESSAGES_OPTION.changePassword.title,
       text: MAIL_MESSAGES_OPTION.changePassword.message,
-      code: passwordChangeKey,
+      code: user.passwordChangeKey,
       email,
       ...rest,
     });
@@ -100,24 +107,24 @@ export class UsersService {
       throw new BadRequestException(ERROR_MESSAGES.userNotFound);
 
     if (user.emailChangeDate) {
-      const lastDateChange = user.emailChangeDate;
-      lastDateChange.setDate(lastDateChange.getDate() + 1);
+      const lastDateChange = utils.date.getDate(
+        DATA_CHANGE_TIMEOUT,
+        'seconds',
+        user.emailChangeDate,
+      );
       if (lastDateChange > new Date())
         throw new BadRequestException(ERROR_MESSAGES.oftenChangeData);
     }
     if (user.emailChangeTime && user.emailChangeTime > new Date())
       throw new BadRequestException(ERROR_MESSAGES.oftenTryChange);
 
-    const emailChangeKey = utils.common.getRandomId();
-    const emailChangeTime = new Date();
-    emailChangeTime.setMinutes(emailChangeTime.getMinutes() + 5);
-    user.emailChangeKey = emailChangeKey;
-    user.emailChangeTime = emailChangeTime;
+    user.emailChangeKey = utils.common.getRandomId();
+    user.emailChangeTime = utils.date.getDate(EMAIL_CHANGE_TIME, 'seconds');
     await user.save();
     await this.mailerService.sendMail({
       subject: MAIL_MESSAGES_OPTION.callChangeEmail.title,
       text: MAIL_MESSAGES_OPTION.callChangeEmail.message,
-      code: emailChangeKey,
+      code: user.emailChangeKey,
       email: user.email,
       ...rest,
     });
@@ -139,11 +146,8 @@ export class UsersService {
     await this.checkUniqueEmail({ email: dto.email, ...rest });
 
     user.emailToChange = dto.email;
-    const emailChangeKey = utils.common.getRandomId();
-    const emailChangeTime = new Date();
-    emailChangeTime.setMinutes(emailChangeTime.getMinutes() + 5);
-    user.emailChangeKey = emailChangeKey;
-    user.emailChangeTime = emailChangeTime;
+    user.emailChangeKey = utils.common.getRandomId();
+    user.emailChangeTime = utils.date.getDate(EMAIL_CHANGE_TIME, 'seconds');
     await user.save();
 
     await this.mailerService.sendMail({
@@ -161,8 +165,11 @@ export class UsersService {
     const user = await this.usersDatabase.getByIdWithSettings(userId, rest);
     if (!user) throw new BadRequestException(ERROR_MESSAGES.userNotFound);
     if (user.nickNameChangeDate) {
-      const lastDateChange = user.nickNameChangeDate;
-      lastDateChange.setMonth(lastDateChange.getMonth() + 1);
+      const lastDateChange = utils.date.getDate(
+        NICK_NAME_CHANGE_TIMEOUT,
+        'seconds',
+        user.nickNameChangeDate,
+      );
       if (lastDateChange > new Date())
         throw new BadRequestException(ERROR_MESSAGES.changedNickName);
     }

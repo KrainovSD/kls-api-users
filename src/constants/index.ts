@@ -18,6 +18,10 @@ export const MIME_TYPE_WALLPAPER = new RegExp(
 export const USER_SETTINGS_DEFAULT = config.settings.defaultUserSettings;
 export const USER_FORBIDDEN_FIELDS = config.settings.userForbiddenFields;
 export const USER_PRIVATE_FIELDS = config.settings.userPrivateFields;
+export const PASSWORD_CHANGE_TIME = config.settings.passwordChangeTime;
+export const DATA_CHANGE_TIMEOUT = config.settings.dataChangeTimeout;
+export const EMAIL_CHANGE_TIME = config.settings.emailChangeTime;
+export const NICK_NAME_CHANGE_TIMEOUT = config.settings.nickNameChangeTimeout;
 
 export const SWAGGER_DESCRIPTION = config.texts.swagger.descriptions;
 export const RESPONSE_MESSAGES = config.texts.responses;

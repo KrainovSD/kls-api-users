@@ -58,12 +58,14 @@ export class AuthService {
       key: confirmDto.key,
       ...rest,
     });
+
     if (
       !user ||
       (user && user?.emailChangeTime && user.emailChangeTime < new Date()) ||
       !user?.emailToChange
     )
       throw new BadRequestException(ERROR_MESSAGES.badKeyOrTime);
+
     user.confirmed = true;
     user.email = user.emailToChange.toLowerCase();
     user.emailToChange = null;
@@ -79,12 +81,12 @@ export class AuthService {
       login: loginDto.login,
       ...rest,
     });
-    if (!user) throw new BadRequestException('Неверный логин или пароль');
+    if (!user) throw new BadRequestException(ERROR_MESSAGES.badLoginOrPassword);
     const checkPassword = await compare(loginDto.password, user.hash);
     if (!checkPassword)
-      throw new BadRequestException('Неверный логин или пароль');
+      throw new BadRequestException(ERROR_MESSAGES.badLoginOrPassword);
     if (!user.confirmed)
-      throw new BadRequestException('Аккаунт не подтвержден');
+      throw new BadRequestException(ERROR_MESSAGES.notConfirmed);
 
     user.token =
       user.token &&
@@ -141,6 +143,7 @@ export class AuthService {
     if (!user) throw new UnauthorizedException();
     user.token = null;
     await user.save();
+    return RESPONSE_MESSAGES.success;
   }
 
   private async getCreationUserInfo(userDto: CreateUserDto) {

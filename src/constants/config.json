@@ -99,6 +99,14 @@
       "badEmail": {
         "code": 1008,
         "message": "Bad email."
+      },
+      "badLoginOrPassword": {
+        "code": 1009,
+        "message": "Bad Login or Password."
+      },
+      "notConfirmed": {
+        "code": 1010,
+        "message": "Account not confirmed."
       }
     },
     "mail": {

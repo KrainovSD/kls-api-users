@@ -113,6 +113,13 @@
       "ts"
     ],
     "rootDir": "src",
+    "moduleNameMapper": {
+      "@config": "<rootDir>/config",
+      "@constants": "<rootDir>/constants",
+      "@modules": "<rootDir>/modules",
+      "@tracing": "<rootDir>/tracing",
+      "@database": "<rootDir>/database"
+    },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

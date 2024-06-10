@@ -5,6 +5,11 @@ export type DefaultInfo = {
   operationId: string;
 };
 
+export type GetByIdOptions = {
+  id: string;
+  privateFields?: boolean;
+} & DefaultInfo;
+
 export type CallChangePassOptions = {
   email: string;
   userId: string;
@@ -47,48 +52,18 @@ export type UpdateWallpaperOptions = {
   userId: string;
 } & DefaultInfo;
 
-export type CreateUserOptions = {
+export type CreateOptions = {
   dto: UserCreationArgs;
 } & DefaultInfo;
 
-export type DeleteUsersOptions = {
+export type DeleteAllOptions = {
   dto: DeleteUsersDto;
 } & DefaultInfo;
-
-export type GetUserByEmailOptions = { email: string } & DefaultInfo;
-
-export type GetUserByNickNameOptions = { nickName: string } & DefaultInfo;
-
-export type GetUserByIdServiceOptions = { id: string } & DefaultInfo;
-
-export type GetUserByIdOptions = {
-  id: string;
-  privateFields?: boolean;
-} & DefaultInfo;
-
-export type GetAllUserOptions = {
+export type GetAllOptions = {
   userId: string;
 } & DefaultInfo;
-
-export type GetUserByEmailChangeKey = {
-  key: string;
-} & DefaultInfo;
-
-export type GetUserByPasswordChangeKeyOptions = {
-  key: string;
-} & DefaultInfo;
-
-export type GetUserByEmailOrNickNameOptions = {
-  login: string;
-} & DefaultInfo;
-
-export type GetUserByTokenAndIdOptions = {
-  token: string;
-  id: string;
-} & DefaultInfo;
-
-export type DeleteUserByIdOptions = {
-  id: string;
+export type DeleteOptions = {
+  userId: string;
 } & DefaultInfo;
 
 export type CheckUniqueEmailOptions = {

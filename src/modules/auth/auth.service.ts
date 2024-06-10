@@ -54,10 +54,10 @@ export class AuthService {
   }
 
   async confirm({ confirmDto, ...rest }: ConfirmOptions) {
-    const user = await this.userService.getUserByEmailChangeKey({
-      key: confirmDto.key,
-      ...rest,
-    });
+    const user = await this.userService.usersDatabase.getByEmailChangeKey(
+      confirmDto.key,
+      rest,
+    );
 
     if (
       !user ||
@@ -77,10 +77,10 @@ export class AuthService {
   }
 
   async login({ loginDto, ...rest }: LoginOptions) {
-    const user = await this.userService.getUserByEmailOrNickName({
-      login: loginDto.login,
-      ...rest,
-    });
+    const user = await this.userService.usersDatabase.getByEmailOrNickName(
+      loginDto.login,
+      rest,
+    );
     if (!user) throw new BadRequestException(ERROR_MESSAGES.badLoginOrPassword);
     const checkPassword = await compare(loginDto.password, user.hash);
     if (!checkPassword)
@@ -119,11 +119,11 @@ export class AuthService {
       ...rest,
     });
     if (!decodedToken || !refreshToken) throw new UnauthorizedException();
-    const user = await this.userService.getUserByTokenAndId({
-      token: refreshToken,
-      id: decodedToken.id,
-      ...rest,
-    });
+    const user = await this.userService.usersDatabase.getByTokenAndId(
+      refreshToken,
+      decodedToken.id,
+      rest,
+    );
     if (!user) throw new UnauthorizedException();
     const accessToken = await this.jwtService.generateToken({
       user,
@@ -135,11 +135,11 @@ export class AuthService {
 
   async logout({ refreshToken, userId, ...rest }: LogoutOptions) {
     if (!refreshToken) throw new UnauthorizedException();
-    const user = await this.userService.getUserByTokenAndId({
-      token: refreshToken,
-      id: userId,
-      ...rest,
-    });
+    const user = await this.userService.usersDatabase.getByTokenAndId(
+      refreshToken,
+      userId,
+      rest,
+    );
     if (!user) throw new UnauthorizedException();
     user.token = null;
     await user.save();

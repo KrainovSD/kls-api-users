@@ -16,6 +16,8 @@ export const MIME_TYPE_WALLPAPER = new RegExp(
   config.settings.uploads.mimeTypeWallpaper,
 );
 export const USER_SETTINGS_DEFAULT = config.settings.defaultUserSettings;
+export const USER_FORBIDDEN_FIELDS = config.settings.userForbiddenFields;
+export const USER_PRIVATE_FIELDS = config.settings.userPrivateFields;
 
 export const SWAGGER_DESCRIPTION = config.texts.swagger.descriptions;
 export const RESPONSE_MESSAGES = config.texts.responses;

@@ -42,13 +42,16 @@ export class UsersController {
 
   @Get('/:id')
   getUser(@Param() getUserDto: GetUserDto, @OperationId() operationId: string) {
-    return this.userServise.getUserById({ id: getUserDto.id, operationId });
+    return this.userServise.usersDatabase.getById({
+      id: getUserDto.id,
+      operationId,
+    });
   }
 
   @UseGuards(AuthGuard())
   @Get('')
   getYourself(@UserId() userId: string, @OperationId() operationId: string) {
-    return this.userServise.getUserById({
+    return this.userServise.usersDatabase.getById({
       id: userId,
       operationId,
       privateFields: true,
@@ -58,7 +61,9 @@ export class UsersController {
   @UseGuards(AuthGuard())
   @Get('/all')
   getAllUser(@UserId() userId: string, @OperationId() operationId: string) {
-    return this.userServise.getAllUser({ userId, operationId });
+    return this.userServise.usersDatabase.getAllExceptOne(userId, {
+      operationId,
+    });
   }
 
   @Post('/pass')
@@ -196,6 +201,6 @@ export class UsersController {
   @UseGuards(AuthGuard({ roles: 'admin' }))
   @Post('/delete')
   deleteUsers(@Body() dto: DeleteUsersDto, @OperationId() operationId: string) {
-    return this.userServise.deleteUsers({ dto, operationId });
+    return this.userServise.deleteAll({ dto, operationId });
   }
 }

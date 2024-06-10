@@ -40,7 +40,23 @@
       "maxSizeWallpaper": 2097152,
       "mimeTypeAvatar": "/(png|jpeg|jpg|gif)$",
       "mimeTypeWallpaper": "/(png|jpeg|jpg|gif)$"
-    }
+    },
+    "userForbiddenFields": [
+      "hash",
+      "confirmed",
+      "token",
+      "passwordChangeKey",
+      "passwordChangeTime",
+      "emailChangeKey",
+      "emailChangeTime"
+    ],
+    "userPrivateFields": [
+      "email",
+      "passwordChangeDate",
+      "emailChangeDate",
+      "emailToChange",
+      "nickNameChangeDate"
+    ]
   },
   "texts": {
     "swagger": {

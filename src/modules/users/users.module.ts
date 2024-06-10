@@ -7,6 +7,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { SettingsModule } from '../settings';
 import { ClientModule } from '../clients';
+import { UsersDatabase } from './users.database';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { ClientModule } from '../clients';
     ClientModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, UsersDatabase],
   exports: [UsersService],
 })
 export class UsersModule {}

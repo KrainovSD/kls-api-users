@@ -1,16 +1,18 @@
 import { getModelToken } from '@nestjs/sequelize';
 import { Test } from '@nestjs/testing';
 import { Provider } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
-import { LOGGER_TOKEN } from '@krainovsd/nest-logger-service';
 import { utils } from '@krainovsd/utils';
+import { S3_TOKEN } from '@krainovsd/nest-uploading-service';
 
-import { ClientService, SettingsService } from '@modules';
 import { ERROR_MESSAGES } from '@constants';
+import { User } from '@database';
 
 import { UsersService } from './users.service';
-import { User } from './users.model';
 import { ChangePassDto, ChangeEmailDto } from './dto';
+import { ClientService } from '../clients';
+import { SettingsService } from '../settings';
+import { MailerService } from '../mailer';
+import { UsersDatabase } from './users.database';
 
 describe('Users Service', () => {
   let usersService: UsersService;
@@ -32,27 +34,6 @@ describe('Users Service', () => {
       sendMail: jest.fn(() => null),
     },
   };
-  const loggerProvider: Provider = {
-    provide: LOGGER_TOKEN,
-    useValue: {
-      startRequest: jest.fn(() => null),
-      endRequest: jest.fn(() => null),
-      errorRequest: jest.fn(() => null),
-      startWsMessage: jest.fn(() => null),
-      endWsMessage: jest.fn(() => null),
-      warnWsMessage: jest.fn(() => null),
-      errorWsMessage: jest.fn(() => null),
-      startEvent: jest.fn(() => null),
-      endEvent: jest.fn(() => null),
-      errorEvent: jest.fn(() => null),
-      sendEvent: jest.fn(() => null),
-      answerSuccess: jest.fn(() => null),
-      answerError: jest.fn(() => null),
-      info: jest.fn(() => null),
-      error: jest.fn(() => null),
-      warn: jest.fn(() => null),
-    },
-  };
   const clientProvider: Provider = {
     provide: ClientService,
     useValue: {
@@ -65,21 +46,31 @@ describe('Users Service', () => {
       createSettings: jest.fn(() => null),
     },
   };
+  const s3Provider: Provider = {
+    provide: S3_TOKEN,
+    useValue: {
+      createSettings: jest.fn(() => null),
+    },
+  };
 
   beforeEach(async () => {
     const userModuleRef = await Test.createTestingModule({
       providers: [
         UsersService,
+        UsersDatabase,
         repositoryProvider,
         mailerProvider,
-        loggerProvider,
         clientProvider,
         settingsProvider,
+        s3Provider,
       ],
     }).compile();
 
     usersService = userModuleRef.get<UsersService>(UsersService);
     usersModel = userModuleRef.get<typeof User>(getModelToken(User));
+
+    console.log(usersService.usersDatabase);
+    console.log(usersService);
   });
 
   describe('callChangePass', () => {
@@ -99,9 +90,12 @@ describe('Users Service', () => {
       ).rejects.toThrowError(ERROR_MESSAGES.badEmail.message);
     });
     it('repeated actions within 24hours', async () => {
-      jest.spyOn(usersModel, 'findOne').mockReturnValue({
-        passwordChangeDate: utils.date.getDate(-2, 'hours'),
-      } as any);
+      jest.spyOn(usersModel, 'findOne').mockImplementation(
+        async () =>
+          ({
+            passwordChangeDate: utils.date.getDate(-2, 'hours'),
+          }) as User,
+      );
       await expect(
         usersService.callChangePass({ email, userId, operationId }),
       ).rejects.toThrowError(ERROR_MESSAGES.oftenChangeData.message);

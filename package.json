@@ -31,7 +31,7 @@
     "@krainovsd/nest-logger-service": "^0.2.1",
     "@krainovsd/nest-utils": "^0.1.0",
     "@krainovsd/utils": "^0.1.1",
-    "@krainovsd/nest-uploading-service": "^0.0.2",
+    "@krainovsd/nest-uploading-service": "^0.1.0",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/common": "^10.3.8",
     "@nestjs/core": "^10.3.8",

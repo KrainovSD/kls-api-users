@@ -34,12 +34,12 @@ describe('Auth Service', () => {
   const userProvider: Provider = {
     provide: UsersService,
     useValue: {
-      checkUniqueEmail: jest.fn(() => null),
-      checkUniqueNickName: jest.fn(() => null),
-      createUser: jest.fn(() => null),
-      getUserByEmailChangeKey: jest.fn(() => null),
-      getUserByEmailOrNickName: jest.fn(() => null),
-      getUserByTokenAndId: jest.fn(() => null),
+      create: jest.fn(() => null),
+      usersDatabase: {
+        getByEmailChangeKey: jest.fn(() => null),
+        getByEmailOrNickName: jest.fn(() => null),
+        getByTokenAndId: jest.fn(() => null),
+      },
     },
   };
 
@@ -70,43 +70,49 @@ describe('Auth Service', () => {
 
     it('bad key - error', async () => {
       jest
-        .spyOn(usersService, 'getUserByEmailChangeKey')
+        .spyOn(usersService.usersDatabase, 'getByEmailChangeKey')
         .mockImplementation(async () => null);
       await expect(
         authService.confirm({ confirmDto, operationId }),
       ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it('email change time has expired - error', async () => {
-      jest.spyOn(usersService, 'getUserByEmailChangeKey').mockImplementation(
-        async () =>
-          ({
-            emailChangeTime: utils.date.getDate(-1, 'minutes'),
-          }) as User,
-      );
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmailChangeKey')
+        .mockImplementation(
+          async () =>
+            ({
+              emailChangeTime: utils.date.getDate(-1, 'minutes'),
+            }) as User,
+        );
       await expect(
         authService.confirm({ confirmDto, operationId }),
       ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`haven't email to change - error`, async () => {
-      jest.spyOn(usersService, 'getUserByEmailChangeKey').mockImplementation(
-        async () =>
-          ({
-            emailChangeTime: utils.date.getDate(2, 'minutes'),
-          }) as User,
-      );
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmailChangeKey')
+        .mockImplementation(
+          async () =>
+            ({
+              emailChangeTime: utils.date.getDate(2, 'minutes'),
+            }) as User,
+        );
       await expect(
         authService.confirm({ confirmDto, operationId }),
       ).rejects.toThrowError(ERROR_MESSAGES.badKeyOrTime.message);
     });
     it(`success`, async () => {
-      jest.spyOn(usersService, 'getUserByEmailChangeKey').mockImplementation(
-        async () =>
-          ({
-            emailChangeTime: utils.date.getDate(2, 'minutes'),
-            emailToChange: 'test@gmail.com',
-            save: () => null,
-          }) as unknown as User,
-      );
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmailChangeKey')
+        .mockImplementation(
+          async () =>
+            ({
+              emailChangeTime: utils.date.getDate(2, 'minutes'),
+              emailToChange: 'test@gmail.com',
+              save: () => null,
+            }) as unknown as User,
+        );
       await expect(
         authService.confirm({ confirmDto, operationId }),
       ).resolves.toBeTruthy();
@@ -122,7 +128,7 @@ describe('Auth Service', () => {
 
     it("haven't user - error", async () => {
       jest
-        .spyOn(usersService, 'getUserByEmailOrNickName')
+        .spyOn(usersService.usersDatabase, 'getByEmailOrNickName')
         .mockImplementation(async () => null);
 
       await expect(
@@ -136,13 +142,15 @@ describe('Auth Service', () => {
         SALT_ROUNDS,
       );
 
-      jest.spyOn(usersService, 'getUserByEmailOrNickName').mockImplementation(
-        async () =>
-          ({
-            confirmed: true,
-            hash,
-          }) as User,
-      );
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmailOrNickName')
+        .mockImplementation(
+          async () =>
+            ({
+              confirmed: true,
+              hash,
+            }) as User,
+        );
 
       await expect(
         authService.login({ loginDto, operationId }),
@@ -152,13 +160,15 @@ describe('Auth Service', () => {
     it('not confirmed - error', async () => {
       const hash = await getHash(loginDto.password, SALT_ROUNDS);
 
-      jest.spyOn(usersService, 'getUserByEmailOrNickName').mockImplementation(
-        async () =>
-          ({
-            confirmed: false,
-            hash,
-          }) as User,
-      );
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmailOrNickName')
+        .mockImplementation(
+          async () =>
+            ({
+              confirmed: false,
+              hash,
+            }) as User,
+        );
 
       await expect(
         authService.login({ loginDto, operationId }),
@@ -172,15 +182,17 @@ describe('Auth Service', () => {
         user,
       });
 
-      jest.spyOn(usersService, 'getUserByEmailOrNickName').mockImplementation(
-        async () =>
-          ({
-            confirmed: true,
-            hash,
-            token,
-            save: () => null,
-          }) as unknown as User,
-      );
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmailOrNickName')
+        .mockImplementation(
+          async () =>
+            ({
+              confirmed: true,
+              hash,
+              token,
+              save: () => null,
+            }) as unknown as User,
+        );
 
       const result = await authService.login({ loginDto, operationId });
 
@@ -210,7 +222,7 @@ describe('Auth Service', () => {
 
     it('not found user', async () => {
       jest
-        .spyOn(usersService, 'getUserByTokenAndId')
+        .spyOn(usersService.usersDatabase, 'getByTokenAndId')
         .mockImplementation(async () => null);
 
       await expect(
@@ -220,7 +232,7 @@ describe('Auth Service', () => {
 
     it('success', async () => {
       jest
-        .spyOn(usersService, 'getUserByTokenAndId')
+        .spyOn(usersService.usersDatabase, 'getByTokenAndId')
         .mockImplementation(async () => ({}) as User);
 
       await expect(
@@ -254,7 +266,7 @@ describe('Auth Service', () => {
 
     it('bad id', async () => {
       jest
-        .spyOn(usersService, 'getUserByTokenAndId')
+        .spyOn(usersService.usersDatabase, 'getByTokenAndId')
         .mockImplementation(async () => null);
 
       await expect(
@@ -268,7 +280,7 @@ describe('Auth Service', () => {
 
     it('success', async () => {
       jest
-        .spyOn(usersService, 'getUserByTokenAndId')
+        .spyOn(usersService.usersDatabase, 'getByTokenAndId')
         .mockImplementation(
           async () => ({ save: () => null }) as unknown as User,
         );

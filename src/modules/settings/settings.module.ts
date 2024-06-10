@@ -5,11 +5,12 @@ import { Settings, User } from '@database';
 
 import { SettingsController } from './settings.controller';
 import { SettingsService } from './settings.service';
+import { SettingsDatabase } from './settings.database';
 
 @Module({
   imports: [SequelizeModule.forFeature([Settings, User])],
   controllers: [SettingsController],
-  providers: [SettingsService],
+  providers: [SettingsService, SettingsDatabase],
   exports: [SettingsService],
 })
 export class SettingsModule {}

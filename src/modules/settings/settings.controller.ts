@@ -22,20 +22,21 @@ export class SettingsController {
     @UserId() userId: string,
     @OperationId() operationId: string,
   ) {
-    return this.settingsService.updateSettings({ dto, operationId, userId });
+    return this.settingsService.update({ dto, operationId, userId });
   }
 
   @UseGuards(AuthGuard())
   @Get('')
   get(@UserId() userId: string, @OperationId() operationId: string) {
-    return this.settingsService.getSettingsByUserId({ userId, operationId });
+    return this.settingsService.settingsDatabase.getById(userId, {
+      operationId,
+    });
   }
 
   @MessagePattern('user_settings')
   checkAuth(@Payload() dto: GetSettingsMessageDto) {
-    return this.settingsService.getSettingsByUserId({
+    return this.settingsService.settingsDatabase.getById(dto.userId, {
       operationId: v4(),
-      userId: dto.userId,
     });
   }
 }

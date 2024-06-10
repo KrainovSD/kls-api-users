@@ -1,24 +1,17 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { utils } from '@krainovsd/utils';
-import { v4 } from 'uuid';
 
 import { ERROR_MESSAGES, RESPONSE_MESSAGES } from '@constants';
-import { Settings } from '@database';
 
-import {
-  UpdateSettingsOptions,
-  GetSettingsByUserIdOptions,
-} from './settings.typings';
+import { UpdateSettingsOptions } from './settings.typings';
+import { SettingsDatabase } from './settings.database';
 
 @Injectable()
 export class SettingsService {
-  constructor(
-    @InjectModel(Settings) private readonly settingRepo: typeof Settings,
-  ) {}
+  constructor(readonly settingsDatabase: SettingsDatabase) {}
 
-  async updateSettings({ dto, userId, ...rest }: UpdateSettingsOptions) {
-    const settings = await this.getSettingsByUserId({ userId, ...rest });
+  async update({ dto, userId, ...rest }: UpdateSettingsOptions) {
+    const settings = await this.settingsDatabase.getById(userId, rest);
     if (!settings) throw new BadRequestException(ERROR_MESSAGES.userNotFound);
 
     utils.common.updateNewValue(
@@ -27,21 +20,5 @@ export class SettingsService {
     );
     await settings.save();
     return RESPONSE_MESSAGES.success;
-  }
-
-  async createSettings(userId: string) {
-    const settings = await this.settingRepo.create({
-      id: v4(),
-      userId,
-    });
-    return settings;
-  }
-
-  async getSettingsByUserId({ userId }: GetSettingsByUserIdOptions) {
-    return this.settingRepo.findOne({
-      where: {
-        userId,
-      },
-    });
   }
 }

@@ -3,11 +3,8 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
 import { utils } from '@krainovsd/utils';
 import { hash as getHash } from 'bcryptjs';
-import { InjectS3, S3Service } from '@krainovsd/nest-uploading-service';
 
 import {
   ERROR_MESSAGES,
@@ -15,7 +12,6 @@ import {
   RESPONSE_MESSAGES,
   SALT_ROUNDS,
 } from '@constants';
-import { Settings, User } from '@database';
 
 import {
   CallChangeEmailOptions,
@@ -27,55 +23,28 @@ import {
   CheckUniqueNickNameOptions,
   ClearAvatarOptions,
   ClearWallpaperOptions,
-  CreateUserOptions,
-  DeleteUserByIdOptions,
-  DeleteUsersOptions,
-  GetAllUserOptions,
-  GetUserByEmailChangeKey,
-  GetUserByEmailOptions,
-  GetUserByEmailOrNickNameOptions,
-  GetUserByIdOptions,
-  GetUserByIdServiceOptions,
-  GetUserByNickNameOptions,
-  GetUserByPasswordChangeKeyOptions,
-  GetUserByTokenAndIdOptions,
+  CreateOptions,
+  DeleteAllOptions,
+  DeleteOptions,
   UpdateAvatarOptions,
   UpdateWallpaperOptions,
 } from './users.typings';
 import { SettingsService } from '../settings';
 import { MailerService } from '../mailer';
 import { ClientService } from '../clients';
+import { UsersDatabase } from './users.database';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User) private readonly userRepo: typeof User,
     private readonly settingService: SettingsService,
     private readonly mailerService: MailerService,
     private readonly clientService: ClientService,
-    @InjectS3()
-    private readonly s3Service: S3Service,
+    readonly usersDatabase: UsersDatabase,
   ) {}
 
-  private readonly forbiddenFields = [
-    'hash',
-    'confirmed',
-    'token',
-    'passwordChangeKey',
-    'passwordChangeTime',
-    'emailChangeKey',
-    'emailChangeTime',
-  ];
-  private readonly privateFields = [
-    'email',
-    'passwordChangeDate',
-    'emailChangeDate',
-    'emailToChange',
-    'nickNameChangeDate',
-  ];
-
   async callChangePass({ email, userId, ...rest }: CallChangePassOptions) {
-    const user = await this.getUserByEmail({ email, ...rest });
+    const user = await this.usersDatabase.getByEmail(email, rest);
     if (!user) throw new BadRequestException(ERROR_MESSAGES.badEmail);
 
     if (user.passwordChangeDate) {
@@ -104,10 +73,7 @@ export class UsersService {
     return RESPONSE_MESSAGES.sendEmail;
   }
   async changePass({ userId, dto, ...rest }: ChangePassOptions) {
-    const user = await this.getUserByPasswordChangeKey({
-      key: dto.key,
-      ...rest,
-    });
+    const user = await this.usersDatabase.getByPasswordChangeKey(dto.key, rest);
     if (
       !user ||
       (user &&
@@ -128,7 +94,7 @@ export class UsersService {
   }
 
   async callChangeEmail({ userId, ...rest }: CallChangeEmailOptions) {
-    const user = await this.getUserByIdService({ id: userId, ...rest });
+    const user = await this.usersDatabase.getByIdWithSettings(userId, rest);
 
     if (!user || !user.email)
       throw new BadRequestException(ERROR_MESSAGES.userNotFound);
@@ -159,7 +125,7 @@ export class UsersService {
     return RESPONSE_MESSAGES.sendEmail;
   }
   async changeEmail({ dto, userId, ...rest }: ChangeEmailOptions) {
-    const user = await this.getUserByEmailChangeKey({ key: dto.key, ...rest });
+    const user = await this.usersDatabase.getByEmailChangeKey(dto.key, rest);
 
     if (
       !user ||
@@ -192,7 +158,7 @@ export class UsersService {
   }
 
   async changeNickName({ nickName, userId, ...rest }: ChangeNickNameOptions) {
-    const user = await this.getUserByIdService({ id: userId, ...rest });
+    const user = await this.usersDatabase.getByIdWithSettings(userId, rest);
     if (!user) throw new BadRequestException(ERROR_MESSAGES.userNotFound);
     if (user.nickNameChangeDate) {
       const lastDateChange = user.nickNameChangeDate;
@@ -209,11 +175,11 @@ export class UsersService {
   }
 
   async clearAvatar({ userId, ...rest }: ClearAvatarOptions) {
-    const user = await this.getUserById({ id: userId, ...rest });
+    const user = await this.usersDatabase.getById({ id: userId, ...rest });
     if (!user || !user.avatar)
       throw new BadRequestException(ERROR_MESSAGES.userNotFound);
 
-    if (!(await this.s3Service.deleteItem({ key: user.avatar, ...rest })))
+    if (!(await this.usersDatabase.deleteFile(user.avatar, rest)))
       return new ConflictException("Couldn't clear avatar");
 
     user.avatar = null;
@@ -221,16 +187,16 @@ export class UsersService {
     return RESPONSE_MESSAGES.success;
   }
   async updateAvatar({ incomingFile, userId, ...rest }: UpdateAvatarOptions) {
-    const user = await this.getUserById({ id: userId, ...rest });
+    const user = await this.usersDatabase.getById({ id: userId, ...rest });
     if (!user) throw new BadRequestException(ERROR_MESSAGES.userNotFound);
 
-    if (user.avatar) this.s3Service.deleteItem({ key: user.avatar, ...rest });
+    if (user.avatar) this.usersDatabase.deleteFile(user.avatar, rest);
     if (
-      !(await this.s3Service.putItem({
-        key: incomingFile.name,
-        payload: incomingFile.payload,
-        ...rest,
-      }))
+      !(await this.usersDatabase.saveFile(
+        incomingFile.name,
+        incomingFile.payload,
+        rest,
+      ))
     )
       return new ConflictException("Couldn't save avatar");
 
@@ -241,11 +207,11 @@ export class UsersService {
   }
 
   async clearWallpaper({ userId, ...rest }: ClearWallpaperOptions) {
-    const user = await this.getUserById({ id: userId, ...rest });
+    const user = await this.usersDatabase.getById({ id: userId, ...rest });
     if (!user || !user.wallpaper)
       throw new BadRequestException(ERROR_MESSAGES.userNotFound);
 
-    if (!(await this.s3Service.deleteItem({ key: user.wallpaper, ...rest })))
+    if (!(await this.usersDatabase.deleteFile(user.wallpaper, rest)))
       return new ConflictException("Couldn't clear wallpaper");
 
     user.wallpaper = null;
@@ -257,17 +223,16 @@ export class UsersService {
     userId,
     ...rest
   }: UpdateWallpaperOptions) {
-    const user = await this.getUserById({ id: userId, ...rest });
+    const user = await this.usersDatabase.getById({ id: userId, ...rest });
     if (!user) throw new BadRequestException(ERROR_MESSAGES.userNotFound);
 
-    if (user.wallpaper)
-      this.s3Service.deleteItem({ key: user.wallpaper, ...rest });
+    if (user.wallpaper) this.usersDatabase.deleteFile(user.wallpaper, rest);
     if (
-      !(await this.s3Service.putItem({
-        key: incomingFile.name,
-        payload: incomingFile.payload,
-        ...rest,
-      }))
+      !(await this.usersDatabase.saveFile(
+        incomingFile.name,
+        incomingFile.payload,
+        rest,
+      ))
     )
       return new ConflictException("Couldn't save wallpaper");
 
@@ -277,110 +242,48 @@ export class UsersService {
     return RESPONSE_MESSAGES.success;
   }
 
-  async createUser({ dto, ...rest }: CreateUserOptions) {
-    const user = this.userRepo.create(dto);
-    const settings = this.settingService.createSettings(dto.id);
+  async createUser({ dto, ...rest }: CreateOptions) {
+    const user = await this.usersDatabase.create(dto, rest);
+    const settings = await this.settingService.settingsDatabase.create(
+      dto.id,
+      rest,
+    );
     this.clientService.createStatistics({ userId: dto.id, ...rest });
 
     await Promise.all([user, settings]);
     return RESPONSE_MESSAGES.success;
   }
-
-  async deleteUsers({ dto, ...rest }: DeleteUsersOptions) {
+  async deleteAll({ dto, ...rest }: DeleteAllOptions) {
     this.clientService.deleteStatistics({ userIds: dto.ids, ...rest });
     this.clientService.deleteWords({ userIds: dto.ids, ...rest });
-    await this.userRepo.destroy({
-      where: {
-        id: dto.ids,
-      },
-    });
+    await this.usersDatabase.deleteAll(dto, rest);
 
     return RESPONSE_MESSAGES.success;
   }
-
-  async getUserByEmail({ email }: GetUserByEmailOptions) {
-    return this.userRepo.findOne({ where: { email } });
-  }
-  async getUserByNickName({ nickName }: GetUserByNickNameOptions) {
-    return this.userRepo.findOne({ where: { nickName } });
-  }
-  async getUserByIdService({ id }: GetUserByIdServiceOptions) {
-    return this.userRepo.findByPk(id, {
-      include: [Settings],
-    });
-  }
-  async getUserById({ id, privateFields = false }: GetUserByIdOptions) {
-    return this.userRepo.findByPk(id, {
-      attributes: {
-        exclude: privateFields
-          ? this.forbiddenFields
-          : [...this.forbiddenFields, ...this.privateFields],
-      },
-      include: [Settings],
-    });
-  }
-  async getAllUser({ userId }: GetAllUserOptions) {
-    return this.userRepo.findAll({
-      where: {
-        id: {
-          [Op.not]: userId,
-        },
-      },
-      attributes: {
-        exclude: [...this.forbiddenFields, ...this.privateFields],
-      },
-    });
-  }
-  async getUserByEmailChangeKey({ key }: GetUserByEmailChangeKey) {
-    return this.userRepo.findOne({ where: { emailChangeKey: key } });
-  }
-  async getUserByPasswordChangeKey({ key }: GetUserByPasswordChangeKeyOptions) {
-    return this.userRepo.findOne({
-      where: { passwordChangeKey: key },
-    });
-  }
-  async getUserByEmailOrNickName({ login }: GetUserByEmailOrNickNameOptions) {
-    return this.userRepo.findOne({
-      where: {
-        [Op.or]: [
-          {
-            email: login.toLowerCase(),
-          },
-          {
-            nickName: login,
-          },
-        ],
-      },
-    });
-  }
-  async getUserByTokenAndId({ id, token }: GetUserByTokenAndIdOptions) {
-    return this.userRepo.findOne({
-      where: {
-        [Op.and]: [{ token }, { id }],
-      },
-    });
-  }
-  async deleteUserById({ id, ...rest }: DeleteUserByIdOptions) {
-    this.clientService.deleteStatistics({ userIds: [id], ...rest });
-    return this.userRepo.destroy({ where: { id } });
+  async delete({ userId, ...rest }: DeleteOptions) {
+    this.clientService.deleteStatistics({ userIds: [userId], ...rest });
+    return this.usersDatabase.delete(userId, rest);
   }
 
   async checkUniqueEmail({ email, ...rest }: CheckUniqueEmailOptions) {
-    const userByEmail = await this.getUserByEmail({ email, ...rest });
+    const userByEmail = await this.usersDatabase.getByEmail(email, rest);
     if (userByEmail) {
       if (userByEmail.confirmed) {
         throw new BadRequestException(ERROR_MESSAGES.hasEmail);
       }
-      await this.deleteUserById({ id: userByEmail.id, ...rest });
+      await this.delete({ userId: userByEmail.id, ...rest });
     }
   }
   async checkUniqueNickName({ nickName, ...rest }: CheckUniqueNickNameOptions) {
-    const userByNickName = await this.getUserByNickName({ nickName, ...rest });
+    const userByNickName = await this.usersDatabase.getByNickName(
+      nickName,
+      rest,
+    );
     if (userByNickName) {
       if (userByNickName.confirmed) {
         throw new BadRequestException(ERROR_MESSAGES.hasNickName);
       }
-      await this.deleteUserById({ id: userByNickName.id, ...rest });
+      await this.delete({ userId: userByNickName.id, ...rest });
     }
   }
 }

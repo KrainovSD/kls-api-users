@@ -7,14 +7,9 @@ export class ChangeNickNameDto {
     description: 'Псевдоним пользователя',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsString({ message: 'Должно быть строкой' })
-  @Length(3, 16, {
-    message: 'Длина должна быть не менее 3 и не более 16 символов',
-  })
-  @Matches(/^([A-Za-z0-9_]+)$/, {
-    message:
-      'Должно состоять из букв латинского алфавита, цифр или нижнего подчеркивания',
-  })
+  @IsNotEmpty()
+  @IsString()
+  @Length(3, 16)
+  @Matches(/^([A-Za-z0-9_]+)$/)
   readonly nickName!: string;
 }

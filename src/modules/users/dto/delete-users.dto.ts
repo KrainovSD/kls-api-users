@@ -7,7 +7,7 @@ export class DeleteUsersDto {
     description: 'Уникальный идентификатор пользователя',
     required: true,
   })
-  @IsArray({ message: 'Должно быть массивом' })
-  @IsUUID('4', { each: true, message: 'Должно быть в формате UUID' })
+  @IsArray()
+  @IsUUID('4', { each: true })
   ids!: string[];
 }

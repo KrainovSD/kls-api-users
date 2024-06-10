@@ -13,14 +13,10 @@ export class CreateUserDto {
     description: 'Имя пользователя',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsString({ message: 'Должно быть строкой' })
-  @Length(2, 15, {
-    message: 'Длина должна быть не менее 2 и не более 15 символов',
-  })
-  @Matches(/^([A-Za-zА-Яа-я]+)$/, {
-    message: 'Должно состоять из букв русского или латинского алфавита',
-  })
+  @IsNotEmpty()
+  @IsString()
+  @Length(2, 15)
+  @Matches(/^([A-Za-zА-Яа-я]+)$/)
   readonly userName!: string;
 
   @ApiProperty({
@@ -28,15 +24,10 @@ export class CreateUserDto {
     description: 'Псевдоним пользователя',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsString({ message: 'Должно быть строкой' })
-  @Length(3, 16, {
-    message: 'Длина должна быть не менее 3 и не более 16 символов',
-  })
-  @Matches(/^([A-Za-z0-9_]+)$/, {
-    message:
-      'Должно состоять из букв латинского алфавита, цифр или нижнего подчеркивания',
-  })
+  @IsNotEmpty()
+  @IsString()
+  @Length(3, 16)
+  @Matches(/^([A-Za-z0-9_]+)$/)
   readonly nickName!: string;
 
   @ApiProperty({
@@ -44,8 +35,8 @@ export class CreateUserDto {
     description: 'Aдрес электронной почты',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsEmail({}, { message: 'Некорректный формат' })
+  @IsNotEmpty()
+  @IsEmail()
   readonly email!: string;
 
   @ApiProperty({
@@ -53,8 +44,8 @@ export class CreateUserDto {
     description: 'Пароль',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsString({ message: 'Должно быть строкой' })
-  @Length(8, undefined, { message: 'Длина должна быть не менее 8 символов' })
+  @IsNotEmpty()
+  @IsString()
+  @Length(8)
   readonly password!: string;
 }

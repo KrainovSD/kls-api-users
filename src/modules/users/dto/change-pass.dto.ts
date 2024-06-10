@@ -7,8 +7,8 @@ export class ChangePassDto {
     description: 'Уникальный ключ',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsString({ message: 'Должно быть строкой' })
+  @IsNotEmpty()
+  @IsString()
   readonly key!: string;
 
   @ApiProperty({
@@ -16,8 +16,8 @@ export class ChangePassDto {
     description: 'Пароль',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsString({ message: 'Должно быть строкой' })
-  @Length(8, undefined, { message: 'Длина должна быть не менее 8 символов' })
+  @IsNotEmpty()
+  @IsString()
+  @Length(8, undefined)
   readonly password!: string;
 }

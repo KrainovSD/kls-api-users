@@ -7,6 +7,6 @@ export class GetUserDto {
     description: 'Уникальный идентификатор пользователя',
     required: true,
   })
-  @IsUUID('4', { message: 'Должно быть в формате UUID' })
+  @IsUUID('4')
   id!: string;
 }

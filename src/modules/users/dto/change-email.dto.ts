@@ -7,8 +7,8 @@ export class ChangeEmailDto {
     description: 'Aдрес электронной почты',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsEmail({}, { message: 'Некорректный формат' })
+  @IsNotEmpty()
+  @IsEmail()
   readonly email!: string;
 
   @ApiProperty({
@@ -16,7 +16,7 @@ export class ChangeEmailDto {
     description: 'Уникальный ключ',
     required: true,
   })
-  @IsNotEmpty({ message: 'Не должно быть пустым' })
-  @IsString({ message: 'Должно быть строкой' })
+  @IsNotEmpty()
+  @IsString()
   readonly key!: string;
 }

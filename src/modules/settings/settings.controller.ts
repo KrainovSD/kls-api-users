@@ -1,11 +1,12 @@
 import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthGuard } from '@krainovsd/nest-jwt-service';
 import { OperationId, UserId } from '@krainovsd/nest-utils';
 import { v4 } from 'uuid';
 
-import { ROUTE_PREFIX } from '@constants';
+import { RESPONSE_MESSAGES, ROUTE_PREFIX } from '@constants';
+import { Settings } from '@database';
 
 import { SettingsService } from './settings.service';
 import { GetSettingsMessageDto, UpdateSettingsDto } from './dto';
@@ -15,6 +16,12 @@ import { GetSettingsMessageDto, UpdateSettingsDto } from './dto';
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    schema: {
+      example: RESPONSE_MESSAGES.success,
+    },
+  })
   @UseGuards(AuthGuard())
   @Put('')
   updateSetting(
@@ -25,6 +32,8 @@ export class SettingsController {
     return this.settingsService.update({ dto, operationId, userId });
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: Settings })
   @UseGuards(AuthGuard())
   @Get('')
   get(@UserId() userId: string, @OperationId() operationId: string) {

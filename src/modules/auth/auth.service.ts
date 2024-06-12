@@ -120,8 +120,8 @@ export class AuthService {
     });
     if (!decodedToken || !refreshToken) throw new UnauthorizedException();
     const user = await this.userService.usersDatabase.getByTokenAndId(
-      refreshToken,
       decodedToken.id,
+      refreshToken,
       rest,
     );
     if (!user) throw new UnauthorizedException();

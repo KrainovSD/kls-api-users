@@ -9,7 +9,14 @@ import {
   UseInterceptors,
   Delete,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@krainovsd/nest-jwt-service';
 import { OperationId, UserId } from '@krainovsd/nest-utils';
 import {
@@ -22,8 +29,10 @@ import {
   MAX_SIZE_WALLPAPER,
   MIME_TYPE_AVATAR,
   MIME_TYPE_WALLPAPER,
+  RESPONSE_MESSAGES,
   ROUTE_PREFIX,
 } from '@constants';
+import { User } from '@database';
 
 import { UsersService } from './users.service';
 import {
@@ -36,10 +45,13 @@ import {
 } from './dto';
 
 @ApiTags('Пользователи')
-@Controller(`${ROUTE_PREFIX.v1}/user`)
+@Controller(`${ROUTE_PREFIX.v1}/users`)
 export class UsersController {
   constructor(private readonly userServise: UsersService) {}
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: User })
+  @UseGuards(AuthGuard())
   @Get('/:id')
   getUser(@Param() getUserDto: GetUserDto, @OperationId() operationId: string) {
     return this.userServise.usersDatabase.getById({
@@ -48,6 +60,8 @@ export class UsersController {
     });
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: User })
   @UseGuards(AuthGuard())
   @Get('')
   getYourself(@UserId() userId: string, @OperationId() operationId: string) {
@@ -58,6 +72,8 @@ export class UsersController {
     });
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: User, isArray: true })
   @UseGuards(AuthGuard())
   @Get('/all')
   getAllUser(@UserId() userId: string, @OperationId() operationId: string) {
@@ -66,6 +82,9 @@ export class UsersController {
     });
   }
 
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ schema: { example: RESPONSE_MESSAGES.sendEmail } })
+  @UseGuards(AuthGuard())
   @Post('/pass')
   callChangePass(
     @Body() dto: CallChangePassDto,
@@ -78,6 +97,10 @@ export class UsersController {
       operationId,
     });
   }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.success } })
+  @UseGuards(AuthGuard())
   @Put('/pass')
   changePass(
     @Body() dto: ChangePassDto,
@@ -87,6 +110,8 @@ export class UsersController {
     return this.userServise.changePass({ dto, userId, operationId });
   }
 
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ schema: { example: RESPONSE_MESSAGES.sendEmail } })
   @UseGuards(AuthGuard())
   @Post('/email')
   callChangeEmail(
@@ -96,6 +121,8 @@ export class UsersController {
     return this.userServise.callChangeEmail({ userId, operationId });
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.sendNewEmail } })
   @UseGuards(AuthGuard())
   @Put('/email')
   changeEmail(
@@ -106,6 +133,8 @@ export class UsersController {
     return this.userServise.changeEmail({ dto, userId, operationId });
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.success } })
   @UseGuards(AuthGuard({ subscription: true }))
   @Put('/nickName')
   changeNickName(
@@ -121,6 +150,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.success } })
   @UseGuards(AuthGuard())
   @Delete('/avatar')
   clearAvatar(@UserId() userId: string, @OperationId() operationId: string) {
@@ -140,6 +170,7 @@ export class UsersController {
     },
   })
   @ApiBearerAuth()
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.success } })
   @UseGuards(AuthGuard())
   @UseInterceptors(
     UploadInterceptor({
@@ -148,7 +179,7 @@ export class UsersController {
       mimeTypes: MIME_TYPE_AVATAR,
     }),
   )
-  @Post('/avatar')
+  @Put('/avatar')
   updateAvatar(
     @IncomingFile() incomingFile: IncomingFile,
     @UserId() userId: string,
@@ -158,6 +189,7 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.success } })
   @UseGuards(AuthGuard())
   @Delete('/wallpaper')
   clearWallpaper(@UserId() userId: string, @OperationId() operationId: string) {
@@ -177,8 +209,9 @@ export class UsersController {
       },
     },
   })
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.success } })
   @UseGuards(AuthGuard())
-  @Post('/wallpaper')
+  @Put('/wallpaper')
   @UseInterceptors(
     UploadInterceptor({
       fieldName: 'wallpaper',
@@ -198,8 +231,10 @@ export class UsersController {
     });
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.success } })
   @UseGuards(AuthGuard({ roles: 'admin' }))
-  @Post('/delete')
+  @Delete('/delete')
   deleteUsers(@Body() dto: DeleteUsersDto, @OperationId() operationId: string) {
     return this.userServise.deleteAll({ dto, operationId });
   }

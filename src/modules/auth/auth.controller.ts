@@ -7,7 +7,12 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { OperationId, UserId } from '@krainovsd/nest-utils';
 import { AuthGuard } from '@krainovsd/nest-jwt-service';
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -39,16 +44,21 @@ export class AuthController {
     };
   }
 
+  @ApiCreatedResponse({ schema: { example: RESPONSE_MESSAGES.sendEmail } })
   @Post('/register')
   register(@Body() userDto: CreateUserDto, @OperationId() operationId: string) {
     return this.authService.register({ userDto, operationId });
   }
 
+  @ApiCreatedResponse({ schema: { example: RESPONSE_MESSAGES.success } })
   @Post('/confirm')
   confirm(@Body() confirmDto: ConfirmDto, @OperationId() operationId: string) {
     return this.authService.confirm({ confirmDto, operationId });
   }
 
+  @ApiCreatedResponse({
+    schema: { example: { access: 'token', refresh: 'token' } },
+  })
   @Post('/login')
   async login(
     @Body() loginDto: LoginDto,
@@ -67,6 +77,9 @@ export class AuthController {
     return { token: tokens.access };
   }
 
+  @ApiOkResponse({
+    schema: { example: { token: 'token' } },
+  })
   @Put('/token')
   token(@Req() request: FastifyRequest, @OperationId() operationId: string) {
     return this.authService.token({
@@ -75,6 +88,8 @@ export class AuthController {
     });
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({ schema: { example: RESPONSE_MESSAGES.success } })
   @UseGuards(AuthGuard())
   @Put('/logout')
   async logout(

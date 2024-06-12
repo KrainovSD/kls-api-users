@@ -17,6 +17,7 @@ import { ROUTE_PREFIX, SERVICES } from '@constants';
 
 import { AppModule } from './app.module';
 import {
+  COOKIE_SECRET,
   PORT,
   RABBIT_HOST,
   RABBIT_PASSWORD,
@@ -53,14 +54,13 @@ async function start() {
   });
 
   app.register(fastifyCookie, {
-    secret: process.env.COOKIE_SECRET ?? 'dw3424w',
+    secret: COOKIE_SECRET,
   });
 
   const config = new DocumentBuilder()
     .setTitle('Swagger KLS Users')
     .setDescription('Документация по API')
     .setVersion('1.0.0')
-    .addBasicAuth()
     .addBearerAuth()
     .build();
 

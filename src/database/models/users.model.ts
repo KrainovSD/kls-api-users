@@ -125,11 +125,6 @@ export class User extends Model<User, UserCreationArgs> {
   })
   confirmed!: boolean;
 
-  @ApiProperty({
-    example:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkcyJ9.FzPrrFubBGlttQS1s27dzvgKvNeLRVqQjqKlMVhx02I',
-    description: 'Токен авторизации',
-  })
   @Column({
     type: DataType.STRING,
     defaultValue: null,

@@ -187,7 +187,7 @@ export class UsersService {
       throw new BadRequestException(ERROR_MESSAGES.userNotFound);
 
     if (!(await this.usersDatabase.deleteFile(user.avatar, rest)))
-      return new ConflictException("Couldn't clear avatar");
+      throw new ConflictException(ERROR_MESSAGES.conflictOperation);
 
     user.avatar = null;
     await user.save();
@@ -205,7 +205,7 @@ export class UsersService {
         rest,
       ))
     )
-      return new ConflictException("Couldn't save avatar");
+      throw new ConflictException(ERROR_MESSAGES.conflictOperation);
 
     user.avatar = incomingFile.name;
     await user.save();
@@ -219,7 +219,7 @@ export class UsersService {
       throw new BadRequestException(ERROR_MESSAGES.userNotFound);
 
     if (!(await this.usersDatabase.deleteFile(user.wallpaper, rest)))
-      return new ConflictException("Couldn't clear wallpaper");
+      throw new ConflictException(ERROR_MESSAGES.conflictOperation);
 
     user.wallpaper = null;
     await user.save();
@@ -241,7 +241,7 @@ export class UsersService {
         rest,
       ))
     )
-      return new ConflictException("Couldn't save wallpaper");
+      throw new ConflictException(ERROR_MESSAGES.conflictOperation);
 
     user.wallpaper = incomingFile.name;
     await user.save();

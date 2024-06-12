@@ -127,6 +127,10 @@
       "notConfirmed": {
         "code": 1010,
         "message": "Account not confirmed."
+      },
+      "conflictOperation": {
+        "code": 1011,
+        "message": "Couldn't finish operation."
       }
     },
     "mail": {

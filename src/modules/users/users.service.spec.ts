@@ -433,4 +433,322 @@ describe('Users Service', () => {
       ).resolves.toBeInstanceOf(Object);
     });
   });
+  describe('clearAvatar', () => {
+    const userId = '1';
+    const operationId = '1';
+
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('user not found', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => null);
+
+      await expect(
+        usersService.clearAvatar({ operationId, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.userNotFound.message);
+    });
+
+    it('avatar not found', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => ({}) as User);
+
+      await expect(
+        usersService.clearAvatar({ operationId, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.userNotFound.message);
+    });
+
+    it("couldn't delete", async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => ({ avatar: 'string' }) as User);
+      jest
+        .spyOn(usersService.usersDatabase, 'deleteFile')
+        .mockImplementation(async () => false);
+
+      await expect(
+        usersService.clearAvatar({ operationId, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.conflictOperation.message);
+    });
+
+    it('success', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(
+          async () =>
+            ({ avatar: 'string', save: () => null }) as unknown as User,
+        );
+      jest
+        .spyOn(usersService.usersDatabase, 'deleteFile')
+        .mockImplementation(async () => true);
+
+      await expect(
+        usersService.clearAvatar({ operationId, userId }),
+      ).resolves.toBeInstanceOf(Object);
+    });
+  });
+  describe('updateAvatar', () => {
+    const incomingFile: IncomingFile = {
+      name: 'file',
+      payload: Buffer.from([]),
+    };
+    const userId = '1';
+    const operationId = '1';
+
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('user not found', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => null);
+
+      await expect(
+        usersService.updateAvatar({ operationId, incomingFile, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.userNotFound.message);
+    });
+
+    it("couldn't save", async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => ({}) as User);
+      jest
+        .spyOn(usersService.usersDatabase, 'saveFile')
+        .mockImplementation(async () => false);
+      await expect(
+        usersService.updateAvatar({ operationId, incomingFile, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.conflictOperation.message);
+    });
+    it('success and deleted old', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(
+          async () =>
+            ({ avatar: 'string', save: () => null }) as unknown as User,
+        );
+      jest
+        .spyOn(usersService.usersDatabase, 'saveFile')
+        .mockImplementation(async () => true);
+      const deleteMock = jest
+        .spyOn(usersService.usersDatabase, 'deleteFile')
+        .mockImplementation(async () => true);
+
+      const response = await usersService.updateAvatar({
+        operationId,
+        incomingFile,
+        userId,
+      });
+
+      expect(response).toBeInstanceOf(Object);
+      expect(deleteMock).toBeCalled();
+    });
+  });
+  describe('clearWallpaper', () => {
+    const userId = '1';
+    const operationId = '1';
+
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('user not found', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => null);
+
+      await expect(
+        usersService.clearWallpaper({ operationId, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.userNotFound.message);
+    });
+
+    it('avatar not found', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => ({}) as User);
+
+      await expect(
+        usersService.clearWallpaper({ operationId, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.userNotFound.message);
+    });
+
+    it("couldn't delete", async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => ({ wallpaper: 'string' }) as User);
+      jest
+        .spyOn(usersService.usersDatabase, 'deleteFile')
+        .mockImplementation(async () => false);
+
+      await expect(
+        usersService.clearWallpaper({ operationId, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.conflictOperation.message);
+    });
+
+    it('success', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(
+          async () =>
+            ({ wallpaper: 'string', save: () => null }) as unknown as User,
+        );
+      jest
+        .spyOn(usersService.usersDatabase, 'deleteFile')
+        .mockImplementation(async () => true);
+
+      await expect(
+        usersService.clearWallpaper({ operationId, userId }),
+      ).resolves.toBeInstanceOf(Object);
+    });
+  });
+  describe('updateWallpaper', () => {
+    const incomingFile: IncomingFile = {
+      name: 'file',
+      payload: Buffer.from([]),
+    };
+    const userId = '1';
+    const operationId = '1';
+
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('user not found', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => null);
+
+      await expect(
+        usersService.updateWallpaper({ operationId, incomingFile, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.userNotFound.message);
+    });
+
+    it("couldn't save", async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(async () => ({}) as User);
+      jest
+        .spyOn(usersService.usersDatabase, 'saveFile')
+        .mockImplementation(async () => false);
+      await expect(
+        usersService.updateWallpaper({ operationId, incomingFile, userId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.conflictOperation.message);
+    });
+    it('success and deleted old', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getById')
+        .mockImplementation(
+          async () =>
+            ({ wallpaper: 'string', save: () => null }) as unknown as User,
+        );
+      jest
+        .spyOn(usersService.usersDatabase, 'saveFile')
+        .mockImplementation(async () => true);
+      const deleteMock = jest
+        .spyOn(usersService.usersDatabase, 'deleteFile')
+        .mockImplementation(async () => true);
+
+      const response = await usersService.updateWallpaper({
+        operationId,
+        incomingFile,
+        userId,
+      });
+
+      expect(response).toBeInstanceOf(Object);
+      expect(deleteMock).toBeCalled();
+    });
+  });
+  describe('checkUniqueEmail', () => {
+    const email = 'email';
+    const operationId = '2';
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('not found user', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmail')
+        .mockImplementation(async () => null);
+
+      await expect(
+        usersService.checkUniqueEmail({ email, operationId }),
+      ).resolves.toBeUndefined();
+    });
+
+    it('find user but not confirmed', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmail')
+        .mockImplementation(async () => ({ confirmed: false }) as User);
+      const deleteMock = jest
+        .spyOn(usersService, 'delete')
+        .mockImplementation(async () => 1);
+
+      const result = await usersService.checkUniqueEmail({
+        email,
+        operationId,
+      });
+
+      expect(result).toBeUndefined();
+      expect(deleteMock).toBeCalled();
+    });
+
+    it('find user confirmed', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getByEmail')
+        .mockImplementation(async () => ({ confirmed: true }) as User);
+
+      await expect(
+        usersService.checkUniqueEmail({ email, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.hasEmail.message);
+    });
+  });
+  describe('checkUniqueNickName', () => {
+    const nickName = 'nickName';
+    const operationId = '2';
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('not found user', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getByNickName')
+        .mockImplementation(async () => null);
+
+      await expect(
+        usersService.checkUniqueNickName({ nickName, operationId }),
+      ).resolves.toBeUndefined();
+    });
+
+    it('find user but not confirmed', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getByNickName')
+        .mockImplementation(async () => ({ confirmed: false }) as User);
+      const deleteMock = jest
+        .spyOn(usersService, 'delete')
+        .mockImplementation(async () => 1);
+
+      const result = await usersService.checkUniqueNickName({
+        nickName,
+        operationId,
+      });
+
+      expect(result).toBeUndefined();
+      expect(deleteMock).toBeCalled();
+    });
+
+    it('find user confirmed', async () => {
+      jest
+        .spyOn(usersService.usersDatabase, 'getByNickName')
+        .mockImplementation(async () => ({ confirmed: true }) as User);
+
+      await expect(
+        usersService.checkUniqueNickName({ nickName, operationId }),
+      ).rejects.toThrowError(ERROR_MESSAGES.hasNickName.message);
+    });
+  });
 });

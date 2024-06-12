@@ -130,7 +130,7 @@ export class AuthService {
       type: 'access',
       ...rest,
     });
-    return { token: accessToken };
+    return accessToken;
   }
 
   async logout({ refreshToken, userId, ...rest }: LogoutOptions) {

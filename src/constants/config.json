@@ -1,6 +1,7 @@
 {
   "settings": {
-    "expiresCookies": 2073600000,
+    "expiresCookiesRefreshToken": 2073600000,
+    "expiresCookiesAccessToken": 2073600000,
     "expiresCache": 86400,
     "saltRounds": 10,
     "routePrefix": {

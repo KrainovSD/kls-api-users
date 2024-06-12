@@ -1,6 +1,10 @@
 import config from './config.json';
 
-export const EXPIRES_COOKIES = config.settings.expiresCookies;
+export const EXPIRES_COOKIES_REFRESH_TOKEN =
+  config.settings.expiresCookiesRefreshToken;
+export const EXPIRES_COOKIES_ACCESS_TOKEN =
+  config.settings.expiresCookiesAccessToken;
+
 export const EXPIRES_CACHE = config.settings.expiresCache;
 export const SALT_ROUNDS = config.settings.saltRounds;
 export const ROUTE_PREFIX = config.settings.routePrefix;

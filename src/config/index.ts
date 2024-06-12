@@ -98,6 +98,10 @@ if (!process.env.S3_BUCKET) {
   throw new Error('S3_BUCKET env is not defined');
 }
 
+if (!process.env.COOKIE_NAME_REFRESH_TOKEN) {
+  throw new Error('COOKIE_NAME_REFRESH_TOKEN env is not defined');
+}
+
 export const POSTGRES_HOST = process.env.POSTGRES_HOST;
 export const POSTGRES_USER = process.env.POSTGRES_USER;
 export const POSTGRES_DB = process.env.POSTGRES_DB;
@@ -128,3 +132,5 @@ export const S3_ENDPOINT = process.env.S3_ENDPOINT;
 export const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY;
 export const S3_SECRET_KEY = process.env.S3_SECRET_KEY;
 export const S3_BUCKET = process.env.S3_BUCKET;
+export const COOKIE_NAME_ACCESS_TOKEN = process.env.COOKIE_NAME_ACCESS_TOKEN;
+export const COOKIE_NAME_REFRESH_TOKEN = process.env.COOKIE_NAME_REFRESH_TOKEN;

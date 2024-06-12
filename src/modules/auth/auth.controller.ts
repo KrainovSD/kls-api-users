@@ -13,34 +13,38 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CookieSerializeOptions } from '@fastify/cookie';
 import { OperationId, UserId } from '@krainovsd/nest-utils';
 import { AuthGuard } from '@krainovsd/nest-jwt-service';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-import { EXPIRES_COOKIES, RESPONSE_MESSAGES, ROUTE_PREFIX } from '@constants';
+import {
+  EXPIRES_COOKIES_ACCESS_TOKEN,
+  EXPIRES_COOKIES_REFRESH_TOKEN,
+  RESPONSE_MESSAGES,
+  ROUTE_PREFIX,
+} from '@constants';
+import { COOKIE_NAME_ACCESS_TOKEN, COOKIE_NAME_REFRESH_TOKEN } from '@config';
 
 import { AuthService } from './auth.service';
 import { ConfirmDto, LoginDto } from './dto';
 import { CreateUserDto } from '../users';
-
-type CookieOptions = {
-  sameSite: 'strict';
-  secure: boolean;
-  httpOnly: boolean;
-  maxAge: number;
-};
 
 @ApiTags('Авторизация')
 @Controller(`${ROUTE_PREFIX.v1}/auth`)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  private getCookieOptions(type: 'create' | 'delete'): CookieOptions {
+  private getCookieOptions(
+    type: 'create' | 'delete',
+    expires: number,
+  ): CookieSerializeOptions {
     return {
       sameSite: 'strict',
       secure: true,
       httpOnly: true,
-      maxAge: type === 'create' ? EXPIRES_COOKIES : 0,
+      path: '/',
+      maxAge: type === 'create' ? expires : 0,
     };
   }
 
@@ -70,10 +74,16 @@ export class AuthController {
       operationId,
     });
     response.setCookie(
-      'token',
+      COOKIE_NAME_REFRESH_TOKEN,
       tokens.refresh,
-      this.getCookieOptions('create'),
+      this.getCookieOptions('create', EXPIRES_COOKIES_REFRESH_TOKEN),
     );
+    if (COOKIE_NAME_ACCESS_TOKEN)
+      response.setCookie(
+        COOKIE_NAME_ACCESS_TOKEN,
+        tokens.access,
+        this.getCookieOptions('create', EXPIRES_COOKIES_ACCESS_TOKEN),
+      );
     return { token: tokens.access };
   }
 
@@ -81,11 +91,24 @@ export class AuthController {
     schema: { example: { token: 'token' } },
   })
   @Put('/token')
-  token(@Req() request: FastifyRequest, @OperationId() operationId: string) {
-    return this.authService.token({
-      refreshToken: request.cookies.token,
+  async token(
+    @Req() request: FastifyRequest,
+    @OperationId() operationId: string,
+    @Res({ passthrough: true }) response: FastifyReply,
+  ) {
+    const token = await this.authService.token({
+      refreshToken: request.cookies[COOKIE_NAME_REFRESH_TOKEN],
       operationId,
     });
+
+    if (COOKIE_NAME_ACCESS_TOKEN)
+      response.setCookie(
+        COOKIE_NAME_ACCESS_TOKEN,
+        token,
+        this.getCookieOptions('create', EXPIRES_COOKIES_ACCESS_TOKEN),
+      );
+
+    return { token };
   }
 
   @ApiBearerAuth()
@@ -103,7 +126,15 @@ export class AuthController {
       userId,
       operationId,
     });
-    response.clearCookie('token', this.getCookieOptions('delete'));
+    response.clearCookie(
+      COOKIE_NAME_REFRESH_TOKEN,
+      this.getCookieOptions('delete', EXPIRES_COOKIES_REFRESH_TOKEN),
+    );
+    if (COOKIE_NAME_ACCESS_TOKEN)
+      response.clearCookie(
+        COOKIE_NAME_ACCESS_TOKEN,
+        this.getCookieOptions('delete', EXPIRES_COOKIES_ACCESS_TOKEN),
+      );
     return RESPONSE_MESSAGES.success;
   }
 }

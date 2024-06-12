@@ -14,8 +14,6 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { join } from 'path';
 
 import { ROUTE_PREFIX, SERVICES } from '@constants';
-
-import { AppModule } from './app.module';
 import {
   COOKIE_SECRET,
   PORT,
@@ -24,7 +22,9 @@ import {
   RABBIT_PORT,
   RABBIT_PROTOCOL,
   RABBIT_USER,
-} from './config';
+} from '@config';
+
+import { AppModule } from './app.module';
 
 async function start() {
   await otelSDK.start();
@@ -65,6 +65,7 @@ async function start() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+
   SwaggerModule.setup(`/docs`, app, document, {
     customSiteTitle: 'Swagger KLS Users',
   });

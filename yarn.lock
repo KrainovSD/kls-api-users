@@ -1544,10 +1544,10 @@
   resolved "https://registry.yarnpkg.com/@js-sdsl/ordered-map/-/ordered-map-4.4.2.tgz#9299f82874bab9e4c7f9c48d865becbfe8d6907c"
   integrity sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==
 
-"@krainovsd/nest-jwt-service@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@krainovsd/nest-jwt-service/-/nest-jwt-service-0.1.0.tgz#a5c88c25dabba96e2ec7a809219701b5020d98aa"
-  integrity sha512-XSqCluEmV483bNSSJGD60Y6d+Z/MTLe5AaH8hXscxmX/zAvJxpK8Ygjn0YFpEhk7+wr+CoLzZwmbon8nqGW6mg==
+"@krainovsd/nest-jwt-service@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@krainovsd/nest-jwt-service/-/nest-jwt-service-0.2.0.tgz#68a8c66e201328526173d7ac999a026af0436b16"
+  integrity sha512-QT6hfb7QvX6XeH6iaoH3tl9erBsI2bVa99S0ekkQphq7ONopi1Yqi3DTtayCG+rO3F9f1IDHYzRV/xdRzo2Dag==
   dependencies:
     "@nestjs/jwt" "^10.2.0"
 

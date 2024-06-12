@@ -21,6 +21,7 @@ import { Settings, User } from '@database';
 
 import {
   ACCESS_TOKEN_SECRET,
+  COOKIE_NAME_ACCESS_TOKEN,
   EXPIRES_ACCESS_TOKEN,
   EXPIRES_REFRESH_TOKEN,
   LOG_FORMAT,
@@ -68,6 +69,7 @@ import {
       refreshTokenSecret: REFRESH_TOKEN_SECRET,
       expiresAccessToken: EXPIRES_ACCESS_TOKEN,
       expiresRefreshToken: EXPIRES_REFRESH_TOKEN,
+      authCookieName: COOKIE_NAME_ACCESS_TOKEN,
     }),
     S3Module.forRoot({
       region: S3_REGION,
